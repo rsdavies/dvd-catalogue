@@ -18,5 +18,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path('dvds/', include('dvds.urls')),
+    path('dvds/add_page', include('dvds.urls')),
     path('admin/', admin.site.urls),
 ]
