@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['192.168.0.34', 'raspberrypi.local', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'dvds.apps.DvdsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
