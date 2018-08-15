@@ -35,7 +35,7 @@ class Actor(models.Model):
         return self.name
 
 
-class Genre(models.Model):
+class Genre(models.Models):
     name = models.CharField(max_length=30)
     film = models.ForeignKey(DvD, on_delete=models.CASCADE)
 
