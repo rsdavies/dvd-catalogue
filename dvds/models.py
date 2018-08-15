@@ -10,9 +10,3 @@ class dvd(models.Model):
 
     def __str__(self):
         return self.name
-
-    def where(self):
-        return self.where_stored
-
-    def released(self):
-        return self.release_date
