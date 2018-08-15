@@ -12,6 +12,6 @@ def add_dvd(request):
     return HttpResponse("This will be the add to database page.")
 
 
-def film_info(request):
+def film_info(request, name):
     return HttpResponse("This page will give information about a film")
 
