@@ -1,6 +1,6 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import dvd
+from .models import DvD
 
-admin.site.register(dvd)
+admin.site.register(DvD)
