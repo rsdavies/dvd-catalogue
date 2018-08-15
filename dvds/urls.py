@@ -8,5 +8,6 @@ urlpatterns = [
     # dvds/add_dvd
     path('add_dvd', views.add_dvd, name='add_dvd'),
     # dvds/film_name/info
+    # TODO this isn't quite working.
     path('<slug:slug>/info', views.film_info, name='film_info')
 ]
