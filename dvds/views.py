@@ -19,7 +19,7 @@ def add_dvd(request):
         if form.is_valid():
             info = form.save(commit=False)
             info.save()
-        return HttpResponseRedirect('dvds/add_dvd/confirm_to_db.html')
+        return render(request, 'dvds/add_dvd/confirm_to_db.html')
     else:
         # display the form
         form = DvDForm()
