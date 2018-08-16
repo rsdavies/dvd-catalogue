@@ -1,8 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
 # Create your views here.
 from .forms import DvDForm
+
 
 def dvd_picker(request):
     # this in its most basic approach is a button that says "pick me a film" and it
@@ -18,12 +19,16 @@ def add_dvd(request):
         if form.is_valid():
             # do stuff
             a = 1
-        return HttpResponse("film details entered")
+        return HttpResponseRedirect("/confirm_to_db/")
     else:
         # display the form
         form = DvDForm()
 
     return render(request, 'dvds/add_dvd.html', {'form': form})
+
+
+def confirm_to_db(request):
+    return HttpResponse("thankyou for adding a dvd")
 
 
 def film_info(request, name):
