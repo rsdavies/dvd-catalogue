@@ -12,8 +12,9 @@ class Location(models.Model):
 
 class DvD(models.Model):
     name = models.CharField(max_length=200)
-    release_date = models.DateTimeField('date released')
+    release_date = models.DateField('date released')
     where_stored = models.ForeignKey(Location, on_delete=models.CASCADE)
+    last_watched = models.DateField('last watched', null=True)
 
     def __str__(self):
         return self.name
