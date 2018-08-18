@@ -39,7 +39,7 @@ def add_dvd(request):
 
 def confirm_dvd(request):
     # display the list of possible films, years and links to posters?
-    possible_films = request.session.get['possible_films']
+    possible_films = request.session.get('possible_films')
     return render(request, 'dvds/confirm_to_db.html', {'possible_films': possible_films})
 
 
