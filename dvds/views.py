@@ -28,7 +28,7 @@ def add_dvd(request):
             # user then picks which one is right, and a further call to the omdb api
             # gets the rest of the data.
 
-        return redirect('confirm_dvd', possible_films)
+        return redirect('confirm_dvd')
     else:
         # display the form
         form = DvDForm()
@@ -36,7 +36,7 @@ def add_dvd(request):
     return render(request, 'dvds/add_dvd.html', {'form': form})
 
 
-def confirm_dvd(request, possible_films):
+def confirm_dvd(request):
     # display the list of possible films, years and links to posters?
     return render(request, 'dvds/confirm_to_db.html')
 
