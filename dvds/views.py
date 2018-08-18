@@ -22,7 +22,10 @@ def add_dvd(request):
             film_year = form.cleaned_data['film_year']
             film_location = form.cleaned_data['film_location']
             omdb.set_default('apikey', api_key)
+            # todo handle the possible lack of year
             possible_films = omdb.get(search=film_name, year=film_year)
+            # todo the possible films needs to be a class so I can . access the
+            # attributes in the next view
             request.session['possible_films'] = possible_films
             # this is a dictionary with films matching the search.
             # want to display the possibilities to the user.
