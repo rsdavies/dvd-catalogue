@@ -23,6 +23,7 @@ def add_dvd(request):
             film_location = form.cleaned_data['film_location']
             omdb.set_default('apikey', api_key)
             possible_films = omdb.get(search=film_name, year=film_year)
+            request.session['possible_films'] = possible_films
             # this is a dictionary with films matching the search.
             # want to display the possibilities to the user.
             # user then picks which one is right, and a further call to the omdb api
@@ -38,7 +39,8 @@ def add_dvd(request):
 
 def confirm_dvd(request):
     # display the list of possible films, years and links to posters?
-    return render(request, 'dvds/confirm_to_db.html')
+    possible_films = request.session.get['possible_films']
+    return render(request, 'dvds/confirm_to_db.html', {'possible_films':possible_films})
 
 
 def film_info(request, name):

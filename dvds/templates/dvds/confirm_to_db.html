@@ -1,5 +1,10 @@
 <html lang="en">
-<body>
-Thanks for adding a dvd
-</body>
+<h1> {{Which film do you mean?}}</h1>
+<ul>
+    {% for film in possible_films %}
+    <li> {{film['name'] }} -- {{film['year']}}</li>
+    {% endfor %}
+</ul>
 </html>
+
+<a href ="{% url dvds:add_dvd %}">Search again?</a>
