@@ -13,7 +13,7 @@ class PickerForm(forms.Form):
         # get the list
         possibles = kwargs.pop('possibles')
         super(PickerForm, self).__init__(*args, **kwargs)
-        choices = [(item.items.imdb_id, "%s, %s" % (item.items.title, item.items.year)) for item in possibles]
+        choices = [(item.imdb_id, "%s, %s" % (item.title, item.year)) for item in possibles]
         self.fields["Which one is it?"] = forms.RadioSelect(choices)
 
 
