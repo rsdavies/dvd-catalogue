@@ -22,9 +22,9 @@ def add_dvd(request):
             film_name = form.cleaned_data['film_name']
             film_year = form.cleaned_data['film_year']
             film_location = form.cleaned_data['film_location']
-            is_movie = form.cleaned_data['is_movie']
+            type = form.cleaned_data['type']
             omdb.set_default('apikey', api_key)
-            if is_movie:
+            if type == 'film':
                 possible_dvds = omdb.search_movie(film_name, year=film_year)
             else:
                 possible_dvds = omdb.search_series(film_name, year=film_year)
