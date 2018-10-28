@@ -55,7 +55,7 @@ def confirm_dvd(request):
     else:
         form = PickerForm(possibles=possible_dvds)
 
-    return render(request, 'dvds/confirm_to_db.html', {'form':form})
+    return render(request, 'dvds/confirm_to_db.html', {'form': form})
 
 
 def film_info(request, name):
