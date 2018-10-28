@@ -1,8 +1,8 @@
 <html lang="en">
 <h1>Which film do you mean?</h1>
 <ul>
-    {% for film in possible_films %}
-    <li> {{ name }} -- {{ year }}</li>
+    {% for key, value in possible_films.items %}
+    <li> {{ key }} -- {{ value }}</li>
     {% endfor %}
 </ul>
 </html>
