@@ -1,12 +1,12 @@
 <html lang="en">
-<h1>Which film do you mean?</h1>
+<h1>Which one do you mean?</h1>
 <ul>
-    {% if possible_films %}
-        {% for film in possible_films %}
-            <li> {{film.title}}, {{film.year}}</li>
+    {% if possible_dvds %}
+        {% for item in possible_dvds %}
+            <li> {{item.title}}, {{item.year}}</li>
         {% endfor %}
     {% else %}
     <strong>No films found</strong>
-    {% endif %}}
+    {% endif %}
 </ul>
 </html>
