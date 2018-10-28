@@ -6,6 +6,7 @@ from .forms import DvDForm
 import omdb
 from .api_keys import api_key
 
+
 def dvd_picker(request):
     # this in its most basic approach is a button that says "pick me a film" and it
     # generates a random dvd_id and takes you to the film info page.
