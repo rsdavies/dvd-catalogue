@@ -23,10 +23,9 @@ def add_dvd(request):
             film_year = form.cleaned_data['film_year']
             film_location = form.cleaned_data['film_location']
             omdb.set_default('apikey', api_key)
-            # todo handle the possible lack of year
+            # TODO this doesn't seem to care what year I put in, am I using the wrong search?
+            # TODO returns films and series, maybe have option on form and only display the one i'm after
             possible_films = omdb.get(search=film_name, year=film_year)
-            # todo the possible films needs to be a class so I can . access the
-            # attributes in the next view
             request.session['possible_films'] = possible_films
             # this is a list of dictionaries with films matching the search.
             # want to display the possibilities to the user.
