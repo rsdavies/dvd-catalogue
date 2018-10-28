@@ -2,8 +2,10 @@
 <h1>Which film do you mean?</h1>
 <ul>
     {% if possible_films %}
-        {% for key, value in possible_films.items %}
-        <li> {{ key }} -- {{ value }}</li>
+        {% for film in possible_films %}
+            {% for key, value in film.items%}
+                <li> {{ key }} -- {{ value }}</li>
+            {% endfor %}
         {% endfor %}
     {% else %}
     <strong>No films found</strong>

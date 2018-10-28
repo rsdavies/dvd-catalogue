@@ -28,8 +28,7 @@ def add_dvd(request):
             # todo the possible films needs to be a class so I can . access the
             # attributes in the next view
             request.session['possible_films'] = possible_films
-            print(possible_films)
-            # this is a dictionary with films matching the search.
+            # this is a list of dictionaries with films matching the search.
             # want to display the possibilities to the user.
             # user then picks which one is right, and a further call to the omdb api
             # gets the rest of the data.
