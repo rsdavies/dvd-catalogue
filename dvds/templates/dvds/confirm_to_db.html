@@ -1,12 +1,5 @@
-<html lang="en">
-<h1>Which one do you mean?</h1>
-<ul>
-    {% if possible_dvds %}
-        {% for item in possible_dvds %}
-            <li> {{item.title}}, {{item.year}}</li>
-        {% endfor %}
-    {% else %}
-    <strong>No films found</strong>
-    {% endif %}
-</ul>
-</html>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>

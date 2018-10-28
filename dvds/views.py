@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
 # Create your views here.
-from .forms import DvDForm
+from .forms import DvDForm, PickerForm
 import omdb
 from .api_keys import api_key
 
@@ -45,8 +45,17 @@ def add_dvd(request):
 
 def confirm_dvd(request):
     # display the list of possible films, years and links to posters?
+    # TODO this needs to be a form too. How do I pass the list of possible_dvds into the form?
     possible_dvds = request.session.get('possible_dvds')
-    return render(request, 'dvds/confirm_to_db.html', {'possible_dvds': possible_dvds})
+    if request.method == 'POST':
+        form = PickerForm(request.POST, possibles=possible_dvds)
+        if form.is_valid():
+            print("valid")
+            # now put that data in the DB?
+    else:
+        form = PickerForm(possibles=possible_dvds)
+
+    return render(request, 'dvds/confirm_to_db.html', {'form':form})
 
 
 def film_info(request, name):
