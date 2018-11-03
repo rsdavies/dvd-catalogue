@@ -53,6 +53,7 @@ def confirm_dvd(request):
     if request.method == 'POST':
         form = PickerForm(request.POST, possibles=possible_dvds)
         if form.is_valid():
+            omdb.set_default('apikey', api_key)
             # TODO now put that data in the DB, needs to be done in order so I can get the IDs 
             # location
             # todo get the id if this location already exists in DB?
@@ -72,7 +73,7 @@ def confirm_dvd(request):
             DvD.where_stored = dvd_location
             for type in dvd_info['genre']:
                 Genre.name = type
-                Genre.film = dvd_info['name']
+                Genre.film = dvd_info['title']
             
         return render(request, 'dvds/dvd_added.html', {'film_info' : film_info})
     else:
