@@ -10,7 +10,7 @@ from .api_keys import api_key
 def dvd_picker(request):
     # this in its most basic approach is a button that says "pick me a film" and it
     # generates a random dvd_id and takes you to the film info page.
-    return HttpResponse("There will be a randomiser button here.")
+    return render(request, 'dvds/dvd_landing.html')
 
 
 def add_dvd(request):
@@ -51,8 +51,9 @@ def confirm_dvd(request):
         form = PickerForm(request.POST, possibles=possible_dvds)
         if form.is_valid():
             print("valid")
-            # now put that data in the DB?
+            # TODO now put that data in the DB
     else:
+        # TODO also have link to something se we can check its the right film?
         form = PickerForm(possibles=possible_dvds)
 
     return render(request, 'dvds/confirm_to_db.html', {'form': form})
