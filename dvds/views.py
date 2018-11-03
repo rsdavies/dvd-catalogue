@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
 # Create your views here.
 from .forms import DvDForm, PickerForm
+from .models import DvD, Director, Location, Actor, Genre
 import omdb
 from .api_keys import api_key
 
@@ -20,17 +21,18 @@ def add_dvd(request):
     if request.method == 'POST':
         form = DvDForm(request.POST)
         if form.is_valid():
-            film_name = form.cleaned_data['film_name']
-            film_year = form.cleaned_data['film_year']
-            film_location = form.cleaned_data['film_location']
+            name = form.cleaned_data['name']
+            year = form.cleaned_data['year']
+            dvd_location = form.cleaned_data['location']
             type = form.cleaned_data['type']
             omdb.set_default('apikey', api_key)
             if type == 'film':
-                possible_dvds = omdb.search_movie(film_name, year=film_year)
+                possible_dvds = omdb.search_movie(name, year=year)
             else:
-                possible_dvds = omdb.search_series(film_name, year=film_year)
+                possible_dvds = omdb.search_series(name, year=year)
 
             request.session['possible_dvds'] = possible_dvds
+            request.session['dvd_location'] = dvd_location
             # this is a list of dictionaries with films matching the search.
             # want to display the possibilities to the user.
             # user then picks which one is right, and a further call to the omdb api
@@ -51,9 +53,28 @@ def confirm_dvd(request):
     if request.method == 'POST':
         form = PickerForm(request.POST, possibles=possible_dvds)
         if form.is_valid():
-            # TODO now put that data in the DB
-            a = 1
-        return redirect('dvd_added')
+            # TODO now put that data in the DB, needs to be done in order so I can get the IDs 
+            # location
+            # todo get the id if this location already exists in DB?
+
+            # DVD
+
+            # Director
+
+            # Actor
+
+            # Genre
+            dvd_id = form.cleaned_data['picked']
+            dvd_info = omdb.imdbid(dvd_id)
+            dvd_location = request.session.get('dvd_location')
+            DvD.name = dvd_info['title']
+            DvD.release_date = dvd_info['released']
+            DvD.where_stored = dvd_location
+            for type in dvd_info['genre']
+                Genre.name = type
+                Genre.film = dvd_info['name']
+            
+        return render(request, 'dvds/dvd_added.html', {'film_info' : film_info})
     else:
         # TODO also have link to something se we can check its the right film?
         form = PickerForm(possibles=possible_dvds)
@@ -61,7 +82,7 @@ def confirm_dvd(request):
     return render(request, 'dvds/confirm_to_db.html', {'form': form})
 
 def dvd_added(request):
-    return render(request, 'dvds/dvd_added.html')
+   return render(request, 'dvds/dvd_added.html')
 
 def film_info(request, name):
     # TODO make this view actually show information about a film!
