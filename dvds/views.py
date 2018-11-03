@@ -7,9 +7,10 @@ import omdb
 from .api_keys import api_key
 
 
-def dvd_picker(request):
+def dvd_landing(request):
     # this in its most basic approach is a button that says "pick me a film" and it
     # generates a random dvd_id and takes you to the film info page.
+    #  and it gives you an option to add a dvd
     return render(request, 'dvds/dvd_landing.html')
 
 
@@ -45,19 +46,22 @@ def add_dvd(request):
 
 def confirm_dvd(request):
     # display the list of possible films, years and links to posters?
-    # TODO this needs to be a form too. How do I pass the list of possible_dvds into the form?
+    
     possible_dvds = request.session.get('possible_dvds')
     if request.method == 'POST':
         form = PickerForm(request.POST, possibles=possible_dvds)
         if form.is_valid():
-            print("valid")
             # TODO now put that data in the DB
+            a = 1
+        return redirect('dvd_added')
     else:
         # TODO also have link to something se we can check its the right film?
         form = PickerForm(possibles=possible_dvds)
 
     return render(request, 'dvds/confirm_to_db.html', {'form': form})
 
+def dvd_added(request):
+    return render(request, 'dvds/dvd_added.html')
 
 def film_info(request, name):
     # TODO make this view actually show information about a film!
