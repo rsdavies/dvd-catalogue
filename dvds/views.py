@@ -70,7 +70,7 @@ def confirm_dvd(request):
             DvD.name = dvd_info['title']
             DvD.release_date = dvd_info['released']
             DvD.where_stored = dvd_location
-            for type in dvd_info['genre']
+            for type in dvd_info['genre']:
                 Genre.name = type
                 Genre.film = dvd_info['name']
             
