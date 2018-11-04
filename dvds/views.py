@@ -84,7 +84,7 @@ def confirm_dvd(request):
                 genre_obj.save()
 
             # DVD
-            dvd = DvD(name = dvd_info['title'],
+            dvd, created = DvD.objects.get_or_create(name = dvd_info['title'],
                       release_date = datetime.strptime(dvd_info['released'],'%d %b %Y'),
                       where_stored = location,
                       runtime = int(dvd_info['runtime'].split()[0]),
@@ -93,11 +93,13 @@ def confirm_dvd(request):
                       poster_url = dvd_info['poster'],
                       director = director)
             dvd.save()
-            for actor in actors:
-                dvd.actors.add(actor)
-            for genre in genres:
-                dvd.genres.add(genre)
-            dvd.save()
+            if not created:
+                # this one was already in there!
+                for actor in actors:
+                    dvd.actors.add(actor)
+                for genre in genres:
+                    dvd.genres.add(genre)
+                dvd.save()
 
         return render(request, 'dvds/dvd_added.html', {'dvd_info' : dvd_info})
     else:
