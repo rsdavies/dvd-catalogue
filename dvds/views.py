@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
+from datetime import datetime
+from decimal import Decimal
 # Create your views here.
 from .forms import DvDForm, PickerForm
 from .models import DvD, Director, Location, Actor, Genre
@@ -55,27 +57,49 @@ def confirm_dvd(request):
         if form.is_valid():
             omdb.set_default('apikey', api_key)
             # TODO now put that data in the DB, needs to be done in order so I can get the IDs 
-            # location
-            # todo get the id if this location already exists in DB?
-
-            # DVD
-
-            # Director
-
-            # Actor
-
-            # Genre
             dvd_id = form.cleaned_data['picked']
             dvd_info = omdb.imdbid(dvd_id)
+
+            # location
             dvd_location = request.session.get('dvd_location')
-            DvD.name = dvd_info['title']
-            DvD.release_date = dvd_info['released']
-            DvD.where_stored = dvd_location
-            for type in dvd_info['genre']:
-                Genre.name = type
-                Genre.film = dvd_info['title']
+            # TODO handle location so I'm selecting it from a dropdown in the form. 
+            location, created = Location.objects.get_or_create(location_name=dvd_location)
+            location.save()
+
+            # Director
+            director, created = Director.objects.get_or_create(name=dvd_info['director'])
+            director.save()
             
-        return render(request, 'dvds/dvd_added.html', {'film_info' : film_info})
+            # Actor
+            actors = []
+            for actor in dvd_info['actors']:
+                act_obj, created = Actor.objects.get_or_create(name=actor)
+                actors.append(act_obj)
+                act_obj.save()
+            # Genre
+            genres = []
+            for genre in dvd_info['genre']:
+                genre_obj, created = Genre.objects.get_or_create(name=genre)
+                genres.append(genre_obj)
+                genre_obj.save()
+
+            # DVD
+            dvd = DvD(name = dvd_info['title'],
+                      release_date = datetime.strptime(dvd_info['released'],'%d %b %Y'),
+                      where_stored = location,
+                      runtime = int(dvd_info['runtime'].split()[0]),
+                      imdb_rating = Decimal(dvd_info['imdb_rating']),
+                      blurb = dvd_info['plot'],
+                      poster_url = dvd_info['poster'],
+                      director = director)
+            dvd.save()
+            for actor in actors:
+                dvd.actors.add(actor)
+            for genre in genres:
+                dvd.genres.add(genre)
+            dvd.save()
+
+        return render(request, 'dvds/dvd_added.html', {'dvd_info' : dvd_info})
     else:
         # TODO also have link to something se we can check its the right film?
         form = PickerForm(possibles=possible_dvds)
