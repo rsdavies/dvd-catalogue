@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<p>Welcome home!</p>
+<p>What do you want to do?</p>
+<p><a href="{% url 'add_dvd' %}">Add a dvd </a> </p>
+<p><a href="{% url 'manage_household' %}"> Manage household </a></p>
+<p><a href="{% url 'setup_household' %}">Setup household</a></p>
+</p>
+{% endblock %}

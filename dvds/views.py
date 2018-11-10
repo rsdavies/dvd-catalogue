@@ -109,6 +109,22 @@ def confirm_dvd(request):
 
     return render(request, 'dvds/confirm_to_db.html', {'form': form})
 
+@login_required
+def user_home(request):
+    return render(request, 'dvds/user_home.html')
+
+@login_required
+def setup_household(request):
+    # this will be where a user setups their household name and the dvd storage locations in their house
+    return render(request, 'dvds/setup_household.html')
+
+@login_required
+def manage_household(request):
+    # this will be where a user adds a dvd to their collection, 
+    # moves it to a different storage location, or removes it entirely
+    # they can also invite someone else to join their household?
+    return render(request, 'dvds/manage_household.html')
+
 def dvd_added(request):
    return render(request, 'dvds/dvd_added.html')
 

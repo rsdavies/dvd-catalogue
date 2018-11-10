@@ -11,7 +11,14 @@ urlpatterns = [
     # dvds/add_dvd/dvd_added
     path('added/', views.dvd_added, name='dvd_added'),
     # dvds/film_name/info
-    path('<slug:name>/info', views.film_info, name='film_info')
+    path('<slug:name>/info', views.film_info, name='film_info'),
+
+    # dvds/user_home
+    path('user_home/', views.user_home, name='user_home'),
+    # dvds/user_home/setup_household
+    path('setup_household', views.setup_household, name='setup_household'),
+    # dvds/user_home/manage_household
+    path('manage_household/', views.manage_household, name='manage_household'),
 ]
 
 #Add Django site authentication urls (for login, logout, password management)
