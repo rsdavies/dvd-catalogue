@@ -6,7 +6,7 @@ from datetime import datetime
 from decimal import Decimal
 # Create your views here.
 from .forms import DvDForm, PickerForm
-from .models import DvD, Director, Location, Actor, Genre
+from .models import DvD, Director, Location, Actor, Genre, HouseHold, CustomUser
 import omdb
 from .api_keys import api_key
 

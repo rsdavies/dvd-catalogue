@@ -5,6 +5,12 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     # add custom user fields
+    @property
+    def is_setup(self):
+        if HouseHold.objects.filter(members_id=self.pk).exists():
+            return True
+        return False
+
     def __str__(self):
         return self.email
 
