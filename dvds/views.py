@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from decimal import Decimal
 # Create your views here.
-from .forms import DvDForm, PickerForm
+from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm
 from .models import DvD, Director, Location, Actor, Genre, HouseHold, CustomUser
 import omdb
 from .api_keys import api_key
@@ -115,8 +115,21 @@ def user_home(request):
 
 @login_required
 def setup_household(request):
+    location_formset = forms.formset_factory(LocationSetupForm)
+    if request.method == 'POST':
+        copy_request = request.POST.copy()
+        location_formset = forms.formset_factory(LocationSetupForm)
+        household_form_data = HouseholdSetupForm(copy_request, prefix="house")
+        location_form_data = LocationSetupForm(copy_request, prefix="location")
+        if copy_request['add'] == '+':
+            location_form_data.data["location-TOTAL_FORMS"] = int(location_form_data.data["location-TOTAL_FORMS"]) + 1
+            location_form = location_formset(copy_request, prefix="location")
+            household_form = HouseholdSetupForm(initial={'household_name':household_form_data.data["house-household_name"]}, prefix='house')
+    else:
+        household_form = HouseholdSetupForm(prefix='house')
+        location_form = location_formset(prefix="location")
     # this will be where a user setups their household name and the dvd storage locations in their house
-    return render(request, 'dvds/setup_household.html')
+    return render(request, 'dvds/setup_household.html', {'household_form':household_form, 'location_form':location_form})
 
 @login_required
 def manage_household(request):
