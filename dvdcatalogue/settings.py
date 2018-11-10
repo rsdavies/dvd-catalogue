@@ -134,3 +134,6 @@ LOGOUT_REDIRECT_URL = 'dvd_landing'
 #emails
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+
+# custom users
+AUTH_USER_MODEL = 'dvds.CustomUser' 

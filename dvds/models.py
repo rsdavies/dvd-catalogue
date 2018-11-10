@@ -1,11 +1,24 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
 
-class Location(models.Model):
-    location_name = models.CharField(max_length=30)
+class CustomUser(AbstractUser):
+    # add custom user fields
+    def __str__(self):
+        return self.email
 
+class HouseHold(models.Model):
+    name = models.CharField("Household name", max_length=30)
+    members = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.name
+
+
+class Location(models.Model):
+    location_name = models.CharField("Name of storage location", max_length=30)
+    location_description = models.CharField("Description of storage location", max_length=200)
+    household = models.ForeignKey(HouseHold, on_delete=models.CASCADE)
     def __str__(self):
         return self.location_name
 
