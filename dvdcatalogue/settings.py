@@ -126,4 +126,5 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 # login
-LOGIN_REDIRECT_URL = '/dvds/'
+LOGIN_REDIRECT_URL = 'dvd_landing'
+LOGOUT_REDIRECT_URL = 'dvd_landing'
