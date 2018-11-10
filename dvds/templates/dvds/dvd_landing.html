@@ -1,3 +1,8 @@
-<p>There will be some buttons here.</p>
-<p>Pick DVD</p>
-<a href="{% url 'add_dvd' %}">Add DVD</a>
+{% extends "dvds/base.html" %}
+{% block content %}
+    <p>There will be some buttons here.</p>
+    <p>Pick DVD</p>
+    {% if user.is_authenticated %}
+    <a href="{% url 'add_dvd' %}">Add DVD</a>
+    {% endif %}
+{% endblock %}

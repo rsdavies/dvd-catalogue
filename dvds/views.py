@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
+from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from decimal import Decimal
 # Create your views here.
@@ -16,7 +17,7 @@ def dvd_landing(request):
     #  and it gives you an option to add a dvd
     return render(request, 'dvds/dvd_landing.html')
 
-
+@login_required
 def add_dvd(request):
     # This is a form, with an input box or two.
     # Should trigger some omdb stuff and fill in the database
@@ -47,7 +48,7 @@ def add_dvd(request):
 
     return render(request, 'dvds/add_dvd.html', {'form': form})
 
-
+@login_required
 def confirm_dvd(request):
     # display the list of possible films, years and links to posters?
     

@@ -1,0 +1,29 @@
+{% load static %}
+<html>
+    <head>
+        <title>DVD picker</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link href="//fonts.googleapis.com/css?family=Oswald&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="{% static 'css/dvds.css' %}">
+    </head>
+    <body>
+        <div class="page-header">
+            <h1><a href="/dvds">DVD picker</a></h1>
+            {% if user.is_authenticated %}
+            <p class="top-menu" style="font-size: 20px">Hello {{ user.username }} (<a href="{% url 'logout' %}">Log out</a>)</p>
+            {% else %}
+            <a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock" style="font-size: 20px"></span></a>
+            {% endif %}
+
+        </div>
+        <div class="content container">
+            <div class="row">
+                    <div class="col-md-8">
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+            </div>
+        </div>
+    </body>
+</html>
