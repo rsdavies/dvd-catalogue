@@ -32,13 +32,14 @@ ALLOWED_HOSTS = ['192.168.0.34', 'raspberrypi.local', '127.0.0.1']
 
 INSTALLED_APPS = [
     'dvds.apps.DvdsConfig',
+    'accounts.apps.AccountsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts.apps.AccountsConfig',
+    
 ]
 
 MIDDLEWARE = [
@@ -129,3 +130,7 @@ STATICFILES_DIRS = [(os.path.join(BASE_DIR, 'dvdcatalogue/static')),]
 # login
 LOGIN_REDIRECT_URL = 'dvd_landing'
 LOGOUT_REDIRECT_URL = 'dvd_landing'
+
+#emails
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")

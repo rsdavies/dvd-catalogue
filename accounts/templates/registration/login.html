@@ -2,6 +2,7 @@
 {% block content %}
 {% if form.errors %}
     <p>Your username and password didn't match. Please try again.</p>
+    <a href="{% url 'password_reset' %}"><span style="font-size:20px">Forgot password?</span></a>
 {% endif %}
 
 <form method="post" action="{% url 'login' %}">
@@ -9,4 +10,5 @@
    {{ form.as_p }}
     <input type="submit" value="login" />
 </form>
+<a href="{% url 'password_reset' %}"><span style="font-size:20px">Forgot password?</span></a>
 {% endblock %}
