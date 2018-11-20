@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import CustomUser, HouseHold
+from .models import CustomUser, HouseHold, Location
 
 class CustomUserCreationForm(UserCreationForm):
 
@@ -18,16 +18,28 @@ class HouseholdSetupForm(forms.Form):
     household_name = forms.CharField(label="What do you want to call your household?", max_length=30)
  
 class LocationSetupForm(forms.Form):
-    location_name = forms.CharField(max_length=30)
-    location_desc = forms.CharField(max_length=200)       
+    location_name = forms.CharField(label='Location Name', max_length=30,
+                                    widget=forms.TextInput(
+                                        attrs={'class':'form-control', 
+                                               'placeholder':'Enter Location Name Here'
+                                               })
+                                    )
+    location_desc = forms.CharField(label='Location Description', max_length=200,
+                                    widget=forms.TextInput(attrs={'class':'form-control', 
+                                                                  'placeholder': 'Enter description here'
+                                                                  })
+                                                           )       
 
+LocationFormSet = forms.formset_factory(LocationSetupForm, extra=1)
 
 class DvDForm(forms.Form):
-    name = forms.CharField(label="what the dvd's name?", max_length=200, required=True)
-    year = forms.CharField(label="what year was it released?", required=False)
-    location = forms.CharField(label="where does it live?", max_length=30, required=True)
-    type = forms.ChoiceField(label="Its is a ", initial='', choices=[('film', 'film'), ('series', 'series')])
-    
+    def __init__(self, user, *args, **kwargs):
+        super(DvDForm, self).__init__(*args, **kwargs)
+        self.fields["name"] = forms.CharField(label="what the dvd's name?", max_length=200, required=True)
+        self.fields["year"] = forms.CharField(label="what year was it released?", required=False)
+        self.fields["location"] = forms.ModelChoiceField(label="location", queryset=Location.objects.filter(household__members__id=user.id))
+        self.fields["type"] = forms.ChoiceField(label="Its is a ", initial='', choices=[('film', 'film'), ('series', 'series')])
+
 
 class PickerForm(forms.Form):
     def __init__(self, *args, **kwargs):

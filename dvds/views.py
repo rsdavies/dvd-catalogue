@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from decimal import Decimal
 # Create your views here.
-from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm
+from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet
 from .models import DvD, Director, Location, Actor, Genre, HouseHold, CustomUser
 import omdb
 from .api_keys import api_key
@@ -22,7 +22,7 @@ def add_dvd(request):
     # This is a form, with an input box or two.
     # Should trigger some omdb stuff and fill in the database
     if request.method == 'POST':
-        form = DvDForm(request.POST)
+        form = DvDForm(request.POST, user=request.user)
         if form.is_valid():
             name = form.cleaned_data['name']
             year = form.cleaned_data['year']
@@ -44,7 +44,7 @@ def add_dvd(request):
         return redirect('confirm_dvd')
     else:
         # display the form
-        form = DvDForm()
+        form = DvDForm(user=request.user)
 
     return render(request, 'dvds/add_dvd.html', {'form': form})
 
@@ -115,28 +115,44 @@ def user_home(request):
 
 @login_required
 def setup_household(request):
-    location_formset = forms.formset_factory(LocationSetupForm)
-    if request.method == 'POST':
-        copy_request = request.POST.copy()
-        location_formset = forms.formset_factory(LocationSetupForm)
-        household_form_data = HouseholdSetupForm(copy_request, prefix="house")
-        location_form_data = LocationSetupForm(copy_request, prefix="location")
-        if copy_request['add'] == '+':
-            location_form_data.data["location-TOTAL_FORMS"] = int(location_form_data.data["location-TOTAL_FORMS"]) + 1
-            location_form = location_formset(copy_request, prefix="location")
-            household_form = HouseholdSetupForm(initial={'household_name':household_form_data.data["house-household_name"]}, prefix='house')
-    else:
-        household_form = HouseholdSetupForm(prefix='house')
-        location_form = location_formset(prefix="location")
-    # this will be where a user setups their household name and the dvd storage locations in their house
-    return render(request, 'dvds/setup_household.html', {'household_form':household_form, 'location_form':location_form})
+    if request.method == 'GET':
+        house_form = HouseholdSetupForm(request.GET or None)
+        loc_formset = LocationFormSet(request.GET or None)
+    elif request.method == 'POST':
+        house_form = HouseholdSetupForm(request.POST)
+        loc_formset = LocationFormSet(request.POST)
+        if house_form.is_valid() and loc_formset.is_valid():
+            # save the household name
+            house_name = house_form.cleaned_data.get('household_name')
+
+            hh = HouseHold(name=house_name, members=request.user)
+            hh.save()
+            for form in loc_formset:
+                # save the dvd name and location to DB.
+                loc_name = form.cleaned_data.get('location_name')
+                loc_desc = form.cleaned_data.get('location_desc')
+                if loc_name:
+                    loc = Location.objects.create(location_name=loc_name, 
+                                                  location_description=loc_desc, 
+                                                  household=hh)
+                    loc.save()
+            # redirect to a page which informs you you've set up household?  
+            return render(request, 'dvds/manage_household.html')
+    return render(request, 'dvds/setup_household.html', 
+                  {'location_form': loc_formset, 
+                   'household_form': house_form})
 
 @login_required
 def manage_household(request):
     # this will be where a user adds a dvd to their collection, 
     # moves it to a different storage location, or removes it entirely
     # they can also invite someone else to join their household?
-    return render(request, 'dvds/manage_household.html')
+
+    # get the household name and the list of locations associated with this user
+    hh_name= HouseHold.objects.get(members=request.user)
+    storage_locs = Location.objects.filter(household=hh_name)
+
+    return render(request, 'dvds/manage_household.html', {'hh':hh_name, 'storage':storage_locs})
 
 def dvd_added(request):
    return render(request, 'dvds/dvd_added.html')
