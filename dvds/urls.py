@@ -12,8 +12,8 @@ urlpatterns = [
     path('confirm_dvd/', views.confirm_dvd, name='confirm_dvd'),
     # dvds/add_dvd/dvd_added
     path('added/', views.dvd_added, name='dvd_added'),
-    # dvds/film_name/info
-    path('<slug:name>/info', views.film_info, name='film_info'),
+    # dvds/dvd_info
+    path('dvd_info/', views.dvd_info, name='dvd_info'),
 
     # dvds/user_home
     path('user_home/', views.user_home, name='user_home'),

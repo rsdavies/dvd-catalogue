@@ -8,8 +8,8 @@ from decimal import Decimal
 from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet
 from .models import DvD, Director, Location, Actor, Genre, HouseHold, CustomUser
 import omdb
+from random import randint
 from .api_keys import api_key
-
 
 def dvd_landing(request):
     # this in its most basic approach is a button that says "pick me a film" and it
@@ -118,7 +118,20 @@ def confirm_dvd(request):
 
 
 def pick_dvd(request):
-    return render(request, 'dvds/pick_dvd.html')
+    if request.method == 'POST':
+        if request.POST.get("Randomise"):
+            # How many dvds does this user have? 
+            count_dvds = DvD.objects.filter(where_stored__household__members=request.user.id).count()
+            random_id = randint(0, count_dvds-1)
+            request.session['random_dvd'] = DvD.objects.filter(where_stored__household__members=request.user.id)[random_id].id
+            
+            return redirect('dvd_info')
+        if request.POST.get("Search"):
+            return HttpResponse("This will be a search page")
+        
+        return render(request, 'dvds/pick_dvd.html')
+    else:
+        return render(request, 'dvds/pick_dvd.html')
 
 @login_required
 def user_home(request):
@@ -168,7 +181,26 @@ def manage_household(request):
 def dvd_added(request):
    return render(request, 'dvds/dvd_added.html')
 
-def film_info(request, name):
-    # TODO make this view actually show information about a film!
-    return HttpResponse("This page will give information about a film")
+def dvd_info(request):
+    if request.method=="POST":
+        if request.POST.get('Pick'):
+            # set the last watched date to now and save. 
+            # redirect to an 'enjoy the show' page
+            dvd = DvD.objects.get(id=request.POST.get('Pick'))
+            dvd.last_watched = datetime.today()
+            dvd.save()
+            return HttpResponse("Enjoy the show!")
+
+        elif request.POST.get('Randomise'):
+            # TODO I have repeated myself here, not very DRY
+            # How many dvds does this user have? 
+            count_dvds = DvD.objects.filter(where_stored__household__members=request.user.id).count()
+            random_id = randint(0, count_dvds-1)
+            dvd = DvD.objects.filter(where_stored__household__members=request.user.id)[random_id]
+            return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
+    else:
+        # TODO make this view actually show information about a film!
+        random_dvd = request.session.get('random_dvd')
+        dvd = DvD.objects.get(id=random_dvd)
+        return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
 

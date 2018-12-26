@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<p>Name:</p>
+{{ dvd.name }}
+<br>
+<p>Director</p>
+{{ dvd.director }}
+<br>
+<p>Run time:</p>
+{{ dvd.runtime }}
+<br>
+<p>IMDB rating:</p>
+{{ dvd.imdb_rating }}
+<br>
+<p>blurb</p>
+{{ dvd.blurb }}
+<br>
+<img src="{{ dvd.poster_url }}">
+
+<form action="" method="POST">
+        {% csrf_token %}
+        <button type="submit" name="Randomise" value="True">Roll again</button> 
+        <button type="submit" value="{{ dvd.id }}" name="Pick"> Pick</button>
+</form>
+
+{% endblock %}
