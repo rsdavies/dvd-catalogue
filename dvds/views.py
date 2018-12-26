@@ -109,6 +109,10 @@ def confirm_dvd(request):
 
     return render(request, 'dvds/confirm_to_db.html', {'form': form})
 
+
+def pick_dvd(request):
+    return render(request, 'dvds/pick_dvd.html')
+
 @login_required
 def user_home(request):
     return render(request, 'dvds/user_home.html')

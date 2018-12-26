@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-    <p>There will be some buttons here.</p>
-    <p>Pick DVD</p>
+    <p>What do you want to do?</p>
+    <a href="{% url 'pick_dvd' %}">Pick DVD</a>
     {% if user.is_authenticated %}
     <a href="{% url 'add_dvd' %}">Add DVD</a>
     {% endif %}

@@ -20,7 +20,6 @@ class HouseHold(models.Model):
     def __str__(self):
         return self.name
 
-
 class Location(models.Model):
     location_name = models.CharField("Name of storage location", max_length=30)
     location_description = models.CharField("Description of storage location", max_length=200)
