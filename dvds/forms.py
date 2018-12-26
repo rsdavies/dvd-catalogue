@@ -33,7 +33,8 @@ class LocationSetupForm(forms.Form):
 LocationFormSet = forms.formset_factory(LocationSetupForm, extra=1)
 
 class DvDForm(forms.Form):
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        user=kwargs.pop('user')
         super(DvDForm, self).__init__(*args, **kwargs)
         self.fields["name"] = forms.CharField(label="what the dvd's name?", max_length=200, required=True)
         self.fields["year"] = forms.CharField(label="what year was it released?", required=False)

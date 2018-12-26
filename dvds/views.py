@@ -35,7 +35,7 @@ def add_dvd(request):
                 possible_dvds = omdb.search_series(name, year=year)
 
             request.session['possible_dvds'] = possible_dvds
-            request.session['dvd_location'] = dvd_location
+            request.session['dvd_location'] = dvd_location.id
             # this is a list of dictionaries with films matching the search.
             # want to display the possibilities to the user.
             # user then picks which one is right, and a further call to the omdb api
@@ -62,24 +62,28 @@ def confirm_dvd(request):
             dvd_info = omdb.imdbid(dvd_id)
 
             # location
-            dvd_location = request.session.get('dvd_location')
-            # TODO handle location so I'm selecting it from a dropdown in the form. 
-            location, created = Location.objects.get_or_create(location_name=dvd_location)
-            location.save()
+            dvd_location = request.session.get('dvd_location', None)
 
-            # Director
-            director, created = Director.objects.get_or_create(name=dvd_info['director'])
-            director.save()
+            # Director(s)
+            director_list = [director for director in dvd_info['director'].split(',')]
+            directors = []
+            for director in director_list:
+                director_obj, created = Director.objects.get_or_create(name=director)
+                directors.append(director_obj)
+                director_obj.save()
             
             # Actor
             actors = []
-            for actor in dvd_info['actors']:
+            # Don't get a list of actors, we get a string, split by commas. 
+            actor_list = [actor for actor in dvd_info['actors'].split(', ') ]
+            for actor in actor_list:
                 act_obj, created = Actor.objects.get_or_create(name=actor)
                 actors.append(act_obj)
                 act_obj.save()
             # Genre
             genres = []
-            for genre in dvd_info['genre']:
+            genre_list = [genre for genre in dvd_info['genre'].split(', ')]
+            for genre in genre_list:
                 genre_obj, created = Genre.objects.get_or_create(name=genre)
                 genres.append(genre_obj)
                 genre_obj.save()
@@ -87,12 +91,12 @@ def confirm_dvd(request):
             # DVD
             dvd, created = DvD.objects.get_or_create(name = dvd_info['title'],
                       release_date = datetime.strptime(dvd_info['released'],'%d %b %Y'),
-                      where_stored = location,
+                      where_stored = Location(id=dvd_location),
                       runtime = int(dvd_info['runtime'].split()[0]),
                       imdb_rating = Decimal(dvd_info['imdb_rating']),
                       blurb = dvd_info['plot'],
                       poster_url = dvd_info['poster'],
-                      director = director)
+                      director = directors[0])
             dvd.save()
             if not created:
                 # this one was already in there!
@@ -100,6 +104,9 @@ def confirm_dvd(request):
                     dvd.actors.add(actor)
                 for genre in genres:
                     dvd.genres.add(genre)
+                # TODO don't assume director is foreign key, what if its many to one?
+                #for director in directors:
+                #    dvd.director.add(director)
                 dvd.save()
 
         return render(request, 'dvds/dvd_added.html', {'dvd_info' : dvd_info})
