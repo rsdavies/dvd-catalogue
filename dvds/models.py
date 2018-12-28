@@ -61,7 +61,10 @@ class DvD(models.Model):
     actors = models.ManyToManyField(Actor)
     genres = models.ManyToManyField(Genre)
 
+    @classmethod
+    def users_dvds(self, user_id):
+        return self.objects.filter(where_stored__household__members=user_id)
+
     def __str__(self):
         return self.name
-
 

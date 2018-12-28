@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+{% if no_results %}
+<p>No results found</p>
+{% endif %}
+<form type="GET" action="" >
+    <input  id="search_box" type="text" name="search_box"  placeholder="Search collection" >
+    <button id="search_submit" type="submit" >Submit</button>
+</form>
+{% endblock %}

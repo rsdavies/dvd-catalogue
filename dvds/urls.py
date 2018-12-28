@@ -14,7 +14,9 @@ urlpatterns = [
     path('added/', views.dvd_added, name='dvd_added'),
     # dvds/dvd_info
     path('dvd_info/', views.dvd_info, name='dvd_info'),
-
+    # dvds/search
+    path('search/', views.search, name='search'),
+   
     # dvds/user_home
     path('user_home/', views.user_home, name='user_home'),
     # dvds/user_home/setup_household

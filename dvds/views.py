@@ -4,8 +4,9 @@ from django import forms
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from decimal import Decimal
+from django.core.cache import cache
 # Create your views here.
-from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet
+from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet, SearchResultsForm
 from .models import DvD, Director, Location, Actor, Genre, HouseHold, CustomUser
 import omdb
 from random import randint
@@ -121,13 +122,13 @@ def pick_dvd(request):
     if request.method == 'POST':
         if request.POST.get("Randomise"):
             # How many dvds does this user have? 
-            count_dvds = DvD.objects.filter(where_stored__household__members=request.user.id).count()
+            count_dvds = DvD.users_dvds(request.user.id).count()
             random_id = randint(0, count_dvds-1)
-            request.session['random_dvd'] = DvD.objects.filter(where_stored__household__members=request.user.id)[random_id].id
+            request.session['random_dvd'] = DvD.users_dvds(request.user.id)[random_id].id
             
             return redirect('dvd_info')
         if request.POST.get("Search"):
-            return HttpResponse("This will be a search page")
+            return redirect('search')
         
         return render(request, 'dvds/pick_dvd.html')
     else:
@@ -194,13 +195,42 @@ def dvd_info(request):
         elif request.POST.get('Randomise'):
             # TODO I have repeated myself here, not very DRY
             # How many dvds does this user have? 
-            count_dvds = DvD.objects.filter(where_stored__household__members=request.user.id).count()
+            count_dvds = DvD.users_dvds.count()
             random_id = randint(0, count_dvds-1)
-            dvd = DvD.objects.filter(where_stored__household__members=request.user.id)[random_id]
+            dvd = DvD.users_dvds[random_id]
             return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
     else:
-        # TODO make this view actually show information about a film!
         random_dvd = request.session.get('random_dvd')
         dvd = DvD.objects.get(id=random_dvd)
         return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
+
+def search(request):
+    if request.method == "GET":
+        if request.GET.get('search_box'):
+            search_query = request.GET.get('search_box', None)
+            result_objects = DvD.users_dvds(request.user.id).filter(name__icontains=search_query)
+            if result_objects:
+                # store the possibles in the cache
+                cache.set('result_objects', result_objects)
+                form = SearchResultsForm(results=result_objects)
+                return render(request, 'dvds/search_results.html', {'form': form})
+            else: 
+                # reload search with a no results found message
+                return render(request, 'dvds/search.html', {'no_results': True})
+   
+        else:
+            return render(request, 'dvds/search.html')
+
+    if request.method == "POST":
+
+        form = SearchResultsForm(request.POST, results=cache.get('result_objects'))
+        if form.is_valid():
+            # get the film id and pass to info 
+            dvd_id = form.cleaned_data['picked']
+            dvd = DvD.users_dvds(request.user.id).get(id=dvd_id)
+            return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
+
+    else:
+        return render(request, 'dvds/search.html', {'no_results': False})
+        
 

@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import CustomUser, HouseHold, Location
+from .models import CustomUser, HouseHold, Location, DvD
 
 class CustomUserCreationForm(UserCreationForm):
 
@@ -50,4 +50,13 @@ class PickerForm(forms.Form):
         choices = [(item['imdb_id'], "%s, %s" % (item['title'], item['year'])) for item in possibles]
         self.fields["picked"] = forms.ChoiceField(choices=choices, widget=forms.RadioSelect)
         # todo, move all the sorting and saving here? 
+
+class SearchResultsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        # get the search results
+        results = kwargs.pop('results')
+        super(SearchResultsForm, self).__init__(*args, **kwargs)
+        choices = [(item.id, item.name) for item in results]
+        self.fields["picked"] = forms.ChoiceField(choices=choices, widget=forms.RadioSelect)
+
 
