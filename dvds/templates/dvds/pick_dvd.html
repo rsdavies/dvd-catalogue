@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
+{% if no_dvds %}
+<p>You have no dvds in your collecton, click
+<a href="{% url 'add_dvd' %}">here</a> to add them</p>
+{% else %}
 <form action="" method="POST">
     {% csrf_token %}
     <input type="submit" value="Randomise" name="Randomise">
     <input type="submit" value="Search" name="Search">
 </form>
+{% endif %}
 {% endblock %}

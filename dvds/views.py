@@ -119,20 +119,25 @@ def confirm_dvd(request):
 
 
 def pick_dvd(request):
-    if request.method == 'POST':
-        if request.POST.get("Randomise"):
-            # How many dvds does this user have? 
-            count_dvds = DvD.users_dvds(request.user.id).count()
-            random_id = randint(0, count_dvds-1)
-            request.session['random_dvd'] = DvD.users_dvds(request.user.id)[random_id].id
+    count_dvds = DvD.users_dvds(request.user.id).count()
+    if count_dvds == 0:
+        # User has no dvds! 
+        return render(request, 'dvds/pick_dvd.html', {'no_dvds': True})
+    else: 
+        if request.method == 'POST':
+            if request.POST.get("Randomise"):
+                # How many dvds does this user have? 
+                random_id = randint(0, count_dvds-1)
+                request.session['random_dvd'] = DvD.users_dvds(request.user.id)[random_id].id
+                
+                return redirect('dvd_info')
+            if request.POST.get("Search"):
+                return redirect('search')
             
-            return redirect('dvd_info')
-        if request.POST.get("Search"):
-            return redirect('search')
-        
-        return render(request, 'dvds/pick_dvd.html')
-    else:
-        return render(request, 'dvds/pick_dvd.html')
+            return render(request, 'dvds/pick_dvd.html', {'no_dvds': False})
+        else:
+            return render(request, 'dvds/pick_dvd.html', {'no_dvds': False})
+    
 
 @login_required
 def user_home(request):
