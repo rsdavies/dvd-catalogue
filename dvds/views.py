@@ -2,11 +2,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
 from django.contrib.auth.decorators import login_required
-from datetime import datetime
+import datetime
 from decimal import Decimal
 from django.core.cache import cache
 # Create your views here.
-from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet, SearchResultsForm
+from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet, SearchResultsForm, SemiRandomForm
 from .models import DvD, Director, Location, Actor, Genre, HouseHold, CustomUser
 import omdb
 from random import randint
@@ -91,7 +91,7 @@ def confirm_dvd(request):
 
             # DVD
             dvd, created = DvD.objects.get_or_create(name = dvd_info['title'],
-                      release_date = datetime.strptime(dvd_info['released'],'%d %b %Y'),
+                      release_date = datetime.datetime.strptime(dvd_info['released'],'%d %b %Y'),
                       where_stored = Location(id=dvd_location),
                       runtime = int(dvd_info['runtime'].split()[0]),
                       imdb_rating = Decimal(dvd_info['imdb_rating']),
@@ -99,16 +99,16 @@ def confirm_dvd(request):
                       poster_url = dvd_info['poster'],
                       director = directors[0])
             dvd.save()
-            if not created:
-                # this one was already in there!
-                for actor in actors:
-                    dvd.actors.add(actor)
-                for genre in genres:
-                    dvd.genres.add(genre)
+            
+            # this one was already in there!
+            for actor in actors:
+                dvd.actors.add(actor)
+            for genre in genres:
+                dvd.genres.add(genre)
                 # TODO don't assume director is foreign key, what if its many to one?
                 #for director in directors:
                 #    dvd.director.add(director)
-                dvd.save()
+            dvd.save()
 
         return render(request, 'dvds/dvd_added.html', {'dvd_info' : dvd_info})
     else:
@@ -124,17 +124,82 @@ def pick_dvd(request):
         # User has no dvds! 
         return render(request, 'dvds/pick_dvd.html', {'no_dvds': True})
     else: 
-        if request.method == 'POST':
-            if request.POST.get("Randomise"):
+        if request.method == 'GET':
+            if request.GET.get("Randomise"):
                 # How many dvds does this user have? 
                 random_id = randint(0, count_dvds-1)
                 request.session['random_dvd'] = DvD.users_dvds(request.user.id)[random_id].id
                 
                 return redirect('dvd_info')
-            if request.POST.get("Search"):
+            if request.GET.get("Search"):
                 return redirect('search')
+
+            if request.GET.get('Idea'):
+                # now to some sort of form together
+                form = SemiRandomForm(user=request.user)
+                return render(request, 'dvds/semi_random.html', {'form': form, 'no_results': False})
             
             return render(request, 'dvds/pick_dvd.html', {'no_dvds': False})
+
+        elif request.method == "POST":
+            form = SemiRandomForm(request.POST, user=request.user)
+            if form.is_valid():
+                # now the searching logic with the filters. 
+                # Handle era
+                filtered_query = DvD.users_dvds(request.user.id)
+                if 'era' in form.changed_data:
+                    if form.cleaned_data['era'] == '2010':
+                        # then we only have one end to the filter
+                        filtered_query = filtered_query.filter(
+                                         release_date__gte=datetime.date(int(form.cleaned_data['era']), 1 , 1))
+                    elif form.cleaned_data['era'] == '1960':
+                        filtered_query = filtered_query.filter(
+                                         release_date__lte=datetime.date(int(form.cleaned_data['era']), 1 , 1))
+                    
+                    else: 
+                        # we have a start and an end
+                        filtered_query = filtered_query.filter(
+                                                release_date__gte=datetime.date(int(form.cleaned_data['era']), 1, 1)
+                                           ).filter(
+                                               release_date__lte=datetime.date(int(form.cleaned_data['era']+10), 12, 31)
+                                           )
+                
+                if 'max_duration' in form.changed_data:
+                    filtered_query = filtered_query.filter(
+                                                        runtime__lte=int(form.cleaned_data['max_duration'])
+                                                        )
+
+                if 'rating' in form.changed_data:
+                    filtered_query = filtered_query.filter(
+                                                        imdb_rating__gte=int(form.cleaned_data['rating'])-2
+                                                    ).filter(
+                                                        imdb_rating__lte=int(form.cleaned_data['rating'])
+                                                    )  
+
+                if 'director' in form.changed_data:
+                    filtered_query = filtered_query.filter(
+                                                            director__name=form.cleaned_data['director']
+                                                          )
+
+                if 'actor' in form.changed_data:
+                    filtered_query = filtered_query.filter(
+                                                            actors__name=form.cleaned_data['actor']
+                                                          )
+
+                if 'genre' in form.changed_data:
+                    filtered_query = filtered_query.filter(
+                                                            genres__name=form.cleaned_data['genre'])
+
+                result_objects = filtered_query
+                if result_objects:
+                    cache.set('result_objects', result_objects)
+                    form2 = SearchResultsForm(results=result_objects)
+                    return render(request, 'dvds/search_results.html', {'form': form2})
+                    # TODO submitting this form doesn't go to the right place. Sort out my forms! 
+                else:
+                    # no results version of filter random 
+                    return render(request, 'dvds/semi_random.html', {'form': form, 'no_results':True})
+            return render(request, 'dvds/semi_random.html', {'form': form, 'no_results': False})
         else:
             return render(request, 'dvds/pick_dvd.html', {'no_dvds': False})
     
@@ -193,7 +258,7 @@ def dvd_info(request):
             # set the last watched date to now and save. 
             # redirect to an 'enjoy the show' page
             dvd = DvD.objects.get(id=request.POST.get('Pick'))
-            dvd.last_watched = datetime.today()
+            dvd.last_watched = datetime.datetime.today()
             dvd.save()
             return HttpResponse("Enjoy the show!")
 
@@ -204,6 +269,7 @@ def dvd_info(request):
             random_id = randint(0, count_dvds-1)
             dvd = DvD.users_dvds[random_id]
             return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
+
     else:
         random_dvd = request.session.get('random_dvd')
         dvd = DvD.objects.get(id=random_dvd)
@@ -237,5 +303,5 @@ def search(request):
 
     else:
         return render(request, 'dvds/search.html', {'no_results': False})
-        
+
 
