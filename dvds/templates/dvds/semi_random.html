@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
+{% load crispy_forms_tags %}
 {% if no_results %}
     <p>There are no results with those filters, please try again.</p>
 {% endif %}
 <form action="" method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form|crispy }}
     <input type="submit" value="Submit">
 </form>
 {% endblock %}

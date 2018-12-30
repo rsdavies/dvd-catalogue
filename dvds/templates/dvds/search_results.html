@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+{% load crispy_forms_tags %}
 <form action="{% url 'search' %}" method="post">
     {% csrf_token %}
-    {{ form }}
+    {{ form|crispy }}
     <input type="submit" value="Submit">
     <a href="{% url 'search' %}">Nope, try again</a>
 </form>

@@ -161,7 +161,7 @@ def pick_dvd(request):
                         filtered_query = filtered_query.filter(
                                                 release_date__gte=datetime.date(int(form.cleaned_data['era']), 1, 1)
                                            ).filter(
-                                               release_date__lte=datetime.date(int(form.cleaned_data['era']+10), 12, 31)
+                                               release_date__lt=datetime.date(int(form.cleaned_data['era'])+10, 12, 31)
                                            )
                 
                 if 'max_duration' in form.changed_data:

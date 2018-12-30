@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+{% load crispy_forms_tags %}
 <form action="" method="post">
     {% csrf_token %}
-    {{ form }}
+    {{ form|cripsy }}
     <input type="submit" value="Submit">
     <a href="{% url 'add_dvd' %}">Nope, try again</a>
 </form>
