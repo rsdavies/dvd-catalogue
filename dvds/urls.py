@@ -13,7 +13,7 @@ urlpatterns = [
     # dvds/add_dvd/dvd_added
     path('added/', views.dvd_added, name='dvd_added'),
     # dvds/dvd_info
-    path('dvd_info/', views.dvd_info, name='dvd_info'),
+    path('<slug:dvd_id>_<slug:name>/info/', views.dvd_info, name='dvd_info'),
     # dvds/search
     path('search/', views.search, name='search'),
    

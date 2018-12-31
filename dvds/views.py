@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
 from django.contrib.auth.decorators import login_required
+from django.utils.text import slugify
 import datetime
 from decimal import Decimal
 from django.core.cache import cache
@@ -11,6 +12,7 @@ from .models import DvD, Director, Location, Actor, Genre, HouseHold, CustomUser
 import omdb
 from random import randint
 from .api_keys import api_key
+
 
 def dvd_landing(request):
     # this in its most basic approach is a button that says "pick me a film" and it
@@ -129,8 +131,8 @@ def pick_dvd(request):
                 # How many dvds does this user have? 
                 random_id = randint(0, count_dvds-1)
                 request.session['random_dvd'] = DvD.users_dvds(request.user.id)[random_id].id
-                
-                return redirect('dvd_info')
+                name = DvD.users_dvds(request.user.id)[random_id].name
+                return redirect('dvd_info', name=slugify(name))
             if request.GET.get("Search"):
                 return redirect('search')
 
@@ -193,8 +195,8 @@ def pick_dvd(request):
                 result_objects = filtered_query
                 if result_objects:
                     cache.set('result_objects', result_objects)
-                    form2 = SearchResultsForm(results=result_objects)
-                    return render(request, 'dvds/search_results.html', {'form': form2})
+                    
+                    return render(request, 'dvds/search_results.html', {'results_list': result_objects})
                     # TODO submitting this form doesn't go to the right place. Sort out my forms! 
                 else:
                     # no results version of filter random 
@@ -252,7 +254,7 @@ def manage_household(request):
 def dvd_added(request):
    return render(request, 'dvds/dvd_added.html')
 
-def dvd_info(request):
+def dvd_info(request, name, dvd_id):
     if request.method=="POST":
         if request.POST.get('Pick'):
             # set the last watched date to now and save. 
@@ -270,10 +272,15 @@ def dvd_info(request):
             dvd = DvD.users_dvds[random_id]
             return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
 
+    elif request.method=="GET":
+        dvd = DvD.users_dvds(request.user.id).get(id=dvd_id)
+        return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
+
     else:
         random_dvd = request.session.get('random_dvd')
-        dvd = DvD.objects.get(id=random_dvd)
+        dvd = DvD.users_dvds(request.user.id).get(id=random_dvd)
         return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
+
 
 def search(request):
     if request.method == "GET":
@@ -283,8 +290,8 @@ def search(request):
             if result_objects:
                 # store the possibles in the cache
                 cache.set('result_objects', result_objects)
-                form = SearchResultsForm(results=result_objects)
-                return render(request, 'dvds/search_results.html', {'form': form})
+                
+                return render(request, 'dvds/search_results.html', {'results_list': result_objects})
             else: 
                 # reload search with a no results found message
                 return render(request, 'dvds/search.html', {'no_results': True})

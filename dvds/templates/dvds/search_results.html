@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-{% load crispy_forms_tags %}
-<form action="{% url 'search' %}" method="post">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input type="submit" value="Submit">
-    <a href="{% url 'search' %}">Nope, try again</a>
-</form>
+
+{% for dvd in results_list %}
+<li><a href="{% url 'dvd_info' name=dvd.name|slugify dvd_id=dvd.id %}">{{ dvd.name }}</li>
+{% endfor %}
+<a href="{% url 'search' %}">Nope, try again</a>
+
 {% endblock %}
