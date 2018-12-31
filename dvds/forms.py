@@ -52,15 +52,6 @@ class PickerForm(forms.Form):
         # todo, move all the sorting and saving here? 
 
 
-class SearchResultsForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        # get the search results
-        results = kwargs.pop('results')
-        super(SearchResultsForm, self).__init__(*args, **kwargs)
-        choices = [(item.id, item.name) for item in results]
-        self.fields["picked"] = forms.ChoiceField(choices=choices, widget=forms.RadioSelect)
-
-
 class SemiRandomForm(forms.Form):
     def __init__(self, *args, **kwargs):
         # give dropdowns of various paramters to randomise by

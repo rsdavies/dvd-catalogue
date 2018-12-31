@@ -7,7 +7,7 @@ import datetime
 from decimal import Decimal
 from django.core.cache import cache
 # Create your views here.
-from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet, SearchResultsForm, SemiRandomForm
+from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet,  SemiRandomForm
 from .models import DvD, Director, Location, Actor, Genre, HouseHold, CustomUser
 import omdb
 from random import randint
@@ -289,8 +289,7 @@ def search(request):
             result_objects = DvD.users_dvds(request.user.id).filter(name__icontains=search_query)
             if result_objects:
                 # store the possibles in the cache
-                cache.set('result_objects', result_objects)
-                
+                cache.set('result_objects', result_objects)     
                 return render(request, 'dvds/search_results.html', {'results_list': result_objects})
             else: 
                 # reload search with a no results found message
@@ -298,15 +297,6 @@ def search(request):
    
         else:
             return render(request, 'dvds/search.html')
-
-    if request.method == "POST":
-
-        form = SearchResultsForm(request.POST, results=cache.get('result_objects'))
-        if form.is_valid():
-            # get the film id and pass to info 
-            dvd_id = form.cleaned_data['picked']
-            dvd = DvD.users_dvds(request.user.id).get(id=dvd_id)
-            return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
 
     else:
         return render(request, 'dvds/search.html', {'no_results': False})
