@@ -119,20 +119,21 @@ def confirm_dvd(request):
 
     return render(request, 'dvds/confirm_to_db.html', {'form': form})
 
+def randomise(request, count_dvds):
+    # How many dvds does this user have? 
+    random_id = randint(0, int(count_dvds)-1)
+    dvd_id = DvD.users_dvds(request.user.id)[random_id].id
+    request.session['random_dvd'] = dvd_id
+    name = DvD.users_dvds(request.user.id)[random_id].name
+    return redirect('dvd_info', name=slugify(name), dvd_id=dvd_id)
 
 def pick_dvd(request):
     count_dvds = DvD.users_dvds(request.user.id).count()
     if count_dvds == 0:
         # User has no dvds! 
-        return render(request, 'dvds/pick_dvd.html', {'no_dvds': True})
+        return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})
     else: 
         if request.method == 'GET':
-            if request.GET.get("Randomise"):
-                # How many dvds does this user have? 
-                random_id = randint(0, count_dvds-1)
-                request.session['random_dvd'] = DvD.users_dvds(request.user.id)[random_id].id
-                name = DvD.users_dvds(request.user.id)[random_id].name
-                return redirect('dvd_info', name=slugify(name))
             if request.GET.get("Search"):
                 return redirect('search')
 
@@ -141,7 +142,7 @@ def pick_dvd(request):
                 form = SemiRandomForm(user=request.user)
                 return render(request, 'dvds/semi_random.html', {'form': form, 'no_results': False})
             
-            return render(request, 'dvds/pick_dvd.html', {'no_dvds': False})
+            return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})
 
         elif request.method == "POST":
             form = SemiRandomForm(request.POST, user=request.user)
@@ -203,7 +204,7 @@ def pick_dvd(request):
                     return render(request, 'dvds/semi_random.html', {'form': form, 'no_results':True})
             return render(request, 'dvds/semi_random.html', {'form': form, 'no_results': False})
         else:
-            return render(request, 'dvds/pick_dvd.html', {'no_dvds': False})
+            return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})
     
 
 @login_required

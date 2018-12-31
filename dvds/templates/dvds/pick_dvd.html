@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-{% if no_dvds %}
+{% if count_dvds == 0 %}
 <p>You have no dvds in your collecton, click
 <a href="{% url 'add_dvd' %}">here</a> to add them</p>
 {% else %}
-<form action="" method="GET">
-    {% csrf_token %}
-    <p><input type="submit" value="Randomise" name="Randomise"></p>
-    <p><input type="submit" value="Some Idea" name="Idea"></p>
-    <p><input type="submit" value="Search" name="Search"></p>
-</form>
+
+<li><a href="{% url 'randomise' count_dvds=count_dvds %}">Randomise</a></li>
+<p><input type="submit" value="Some Idea" name="Idea"></p>
+<p><input type="submit" value="Search" name="Search"></p>
+
 {% endif %}
 {% endblock %}
