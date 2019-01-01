@@ -46,7 +46,6 @@ class DvDForm(forms.Form):
         self.fields["location"] = forms.ModelChoiceField(label="location", queryset=Location.objects.filter(household__members__id=user.id))
         self.fields["type"] = forms.ChoiceField(label="Its is a ", initial='', choices=[('film', 'film'), ('series', 'series')])
 
-
 class PickerForm(forms.Form):
     def __init__(self, *args, **kwargs):
         # get the list
