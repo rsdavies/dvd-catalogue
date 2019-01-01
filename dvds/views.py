@@ -127,6 +127,70 @@ def randomise(request, count_dvds):
     name = DvD.users_dvds(request.user.id)[random_id].name
     return redirect('dvd_info', name=slugify(name), dvd_id=dvd_id)
 
+def filtered_random(request):
+    if request.method == "POST":
+        form = SemiRandomForm(request.POST, user=request.user)
+        if form.is_valid():
+            # now the searching logic with the filters. 
+            # Handle era
+            filtered_query = DvD.users_dvds(request.user.id)
+            if 'era' in form.changed_data:
+                if form.cleaned_data['era'] == '2010':
+                    # then we only have one end to the filter
+                    filtered_query = filtered_query.filter(
+                                        release_date__gte=datetime.date(int(form.cleaned_data['era']), 1 , 1))
+                elif form.cleaned_data['era'] == '1960':
+                    filtered_query = filtered_query.filter(
+                                        release_date__lte=datetime.date(int(form.cleaned_data['era']), 1 , 1))
+                
+                else: 
+                    # we have a start and an end
+                    filtered_query = filtered_query.filter(
+                                            release_date__gte=datetime.date(int(form.cleaned_data['era']), 1, 1)
+                                        ).filter(
+                                            release_date__lt=datetime.date(int(form.cleaned_data['era'])+10, 12, 31)
+                                        )
+
+            if 'max_duration' in form.changed_data:
+                filtered_query = filtered_query.filter(
+                                                    runtime__lte=int(form.cleaned_data['max_duration'])
+                                                    )
+
+            if 'rating' in form.changed_data:
+                filtered_query = filtered_query.filter(
+                                                    imdb_rating__gte=int(form.cleaned_data['rating'])-2
+                                                ).filter(
+                                                    imdb_rating__lte=int(form.cleaned_data['rating'])
+                                                )  
+
+            if 'director' in form.changed_data:
+                filtered_query = filtered_query.filter(
+                                                        director__name=form.cleaned_data['director']
+                                                        )
+
+            if 'actor' in form.changed_data:
+                filtered_query = filtered_query.filter(
+                                                        actors__name=form.cleaned_data['actor']
+                                                        )
+
+            if 'genre' in form.changed_data:
+                filtered_query = filtered_query.filter(
+                                                        genres__name=form.cleaned_data['genre'])
+
+            result_objects = filtered_query
+        if result_objects:
+            cache.set('result_objects', result_objects)
+            
+            return render(request, 'dvds/search_results.html', {'results_list': result_objects})
+            # TODO submitting this form doesn't go to the right place. Sort out my forms! 
+        else:
+            # no results version of filter random 
+            return render(request, 'dvds/semi_random.html', {'form': form, 'no_results':True})
+    else:
+        form = SemiRandomForm(user=request.user)
+        return render(request, 'dvds/semi_random.html', {'form': form, 'no_results': False})
+
+
 def pick_dvd(request):
     count_dvds = DvD.users_dvds(request.user.id).count()
     if count_dvds == 0:
@@ -135,74 +199,8 @@ def pick_dvd(request):
     else: 
         if request.method == 'GET':
             if request.GET.get("Search"):
-                return redirect('search')
-
-            if request.GET.get('Idea'):
-                # now to some sort of form together
-                form = SemiRandomForm(user=request.user)
-                return render(request, 'dvds/semi_random.html', {'form': form, 'no_results': False})
-            
+                return redirect('search')            
             return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})
-
-        elif request.method == "POST":
-            form = SemiRandomForm(request.POST, user=request.user)
-            if form.is_valid():
-                # now the searching logic with the filters. 
-                # Handle era
-                filtered_query = DvD.users_dvds(request.user.id)
-                if 'era' in form.changed_data:
-                    if form.cleaned_data['era'] == '2010':
-                        # then we only have one end to the filter
-                        filtered_query = filtered_query.filter(
-                                         release_date__gte=datetime.date(int(form.cleaned_data['era']), 1 , 1))
-                    elif form.cleaned_data['era'] == '1960':
-                        filtered_query = filtered_query.filter(
-                                         release_date__lte=datetime.date(int(form.cleaned_data['era']), 1 , 1))
-                    
-                    else: 
-                        # we have a start and an end
-                        filtered_query = filtered_query.filter(
-                                                release_date__gte=datetime.date(int(form.cleaned_data['era']), 1, 1)
-                                           ).filter(
-                                               release_date__lt=datetime.date(int(form.cleaned_data['era'])+10, 12, 31)
-                                           )
-                
-                if 'max_duration' in form.changed_data:
-                    filtered_query = filtered_query.filter(
-                                                        runtime__lte=int(form.cleaned_data['max_duration'])
-                                                        )
-
-                if 'rating' in form.changed_data:
-                    filtered_query = filtered_query.filter(
-                                                        imdb_rating__gte=int(form.cleaned_data['rating'])-2
-                                                    ).filter(
-                                                        imdb_rating__lte=int(form.cleaned_data['rating'])
-                                                    )  
-
-                if 'director' in form.changed_data:
-                    filtered_query = filtered_query.filter(
-                                                            director__name=form.cleaned_data['director']
-                                                          )
-
-                if 'actor' in form.changed_data:
-                    filtered_query = filtered_query.filter(
-                                                            actors__name=form.cleaned_data['actor']
-                                                          )
-
-                if 'genre' in form.changed_data:
-                    filtered_query = filtered_query.filter(
-                                                            genres__name=form.cleaned_data['genre'])
-
-                result_objects = filtered_query
-                if result_objects:
-                    cache.set('result_objects', result_objects)
-                    
-                    return render(request, 'dvds/search_results.html', {'results_list': result_objects})
-                    # TODO submitting this form doesn't go to the right place. Sort out my forms! 
-                else:
-                    # no results version of filter random 
-                    return render(request, 'dvds/semi_random.html', {'form': form, 'no_results':True})
-            return render(request, 'dvds/semi_random.html', {'form': form, 'no_results': False})
         else:
             return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})
     

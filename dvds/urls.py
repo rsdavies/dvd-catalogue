@@ -10,6 +10,8 @@ urlpatterns = [
     path('pick_dvd', views.pick_dvd, name='pick_dvd'),
     # dvds/randomise
     path('randomise_<slug:count_dvds>', views.randomise, name='randomise'),
+    # dvds/filtered_random
+    path('filtered_random/', views.filtered_random, name='filtered_random'),
     # dvds/add_dvd/confirm_dvd
     path('confirm_dvd/', views.confirm_dvd, name='confirm_dvd'),
     # dvds/add_dvd/dvd_added

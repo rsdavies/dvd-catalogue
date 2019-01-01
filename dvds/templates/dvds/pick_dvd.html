@@ -6,8 +6,6 @@
 {% else %}
 
 <li><a href="{% url 'randomise' count_dvds=count_dvds %}">Randomise</a></li>
-<p><input type="submit" value="Some Idea" name="Idea"></p>
-<p><input type="submit" value="Search" name="Search"></p>
-
+<li><a href="{% url 'filtered_random' %}">Some Idea</li>
 {% endif %}
 {% endblock %}
