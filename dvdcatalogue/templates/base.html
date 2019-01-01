@@ -12,8 +12,9 @@
             <h1><a href="/dvds">DVD picker</a></h1>
             {% if user.is_authenticated %}
             <p class="top-menu" style="font-size: 20px">Hello {{ user.username }} 
-                  <a href="{% url 'user_home' %}"><span class="glyphicon glyphicon-home" style="font-size: 20px"></span></a>
-                 (<a href="{% url 'logout' %}" style = "font-size: 15px"> Log out</a>)</p>
+                <a href="{% url 'search' %}"><span class="glyphicon glyphicon-search" style="font-size:20px"></span></a>
+                <a href="{% url 'user_home' %}"><span class="glyphicon glyphicon-home" style="font-size: 20px"></span></a>
+                (<a href="{% url 'logout' %}" style = "font-size: 15px"> Log out</a>)</p>
             {% else %}
             <a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock" style="font-size: 20px"></span></a>
             <a href="{% url 'signup' %}" class="top-menu"><span style="font-size:20px">Sign up</span></a>
