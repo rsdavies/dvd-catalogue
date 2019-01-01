@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-
 {% for dvd in results_list %}
-<li><a href="{% url 'dvd_info' name=dvd.name|slugify dvd_id=dvd.id %}">{{ dvd.name }}</li>
+<div class="link">
+<a href="{% url 'dvd_info' name=dvd.name|slugify dvd_id=dvd.id %}">{{ dvd.name }}</a>
+</div>
 {% endfor %}
+<div class="small-link">
 <a href="{% url 'search' %}">Nope, try again</a>
-
+</div>
 {% endblock %}

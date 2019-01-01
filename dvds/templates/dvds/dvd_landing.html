@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-    <p>What do you want to do?</p>
+    <div class="link">
     <a href="{% url 'pick_dvd' %}">Pick DVD</a>
+    </div>
     {% if user.is_authenticated %}
+    <div class="link">
     <a href="{% url 'add_dvd' %}">Add DVD</a>
+    </div>
     {% endif %}
 {% endblock %}

@@ -128,7 +128,7 @@ class SearchForm(forms.Form):
         self.helper.form_class = 'form-horizontal'
         self.helper.layout = Layout(Fieldset('Search',
                                     FieldWithButtons(
-                                    'search_box', Submit('submit','Submit')))
+                                    'search_box', StrictButton("search")))
                                     )
         self.helper.form_show_labels = False
         
