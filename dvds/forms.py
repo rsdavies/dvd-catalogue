@@ -2,8 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser, HouseHold, Location, DvD, Director, Actor, Genre
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
-
+from crispy_forms.layout import Submit, Layout, Fieldset, ButtonHolder, Field
+from crispy_forms.bootstrap import FieldWithButtons, StrictButton
 class CustomUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm):
@@ -91,13 +91,18 @@ class SemiRandomForm(forms.Form):
                                                       required=False)
 
 class SearchForm(forms.Form):
+    search_box = forms.CharField(label='Search', required=True)
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
-        self.fields["Search"] = forms.CharField(label='search_box', required=True)
         self.helper=FormHelper()
         self.helper.form_id = 'id-searchForm'
         self.helper.form_method = 'post'
         self.helper.form_action = 'search'
-        self.helper.add_input(Submit('submit', 'Submit'))
+        self.helper.form_class = 'form-horizontal'
+        self.helper.layout = Layout(Fieldset('Search',
+                                    FieldWithButtons(
+                                    'search_box', Submit('submit','Submit')))
+                                    )
+        self.helper.form_show_labels = False
         
 

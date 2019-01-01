@@ -274,8 +274,8 @@ def dvd_info(request, name, dvd_id):
 def search(request):
     if request.method == "POST":
         form = SearchForm(request.POST)
-        if 'Search' in form.changed_data:
-            search_query = form.data["Search"]
+        if 'search_box' in form.changed_data:
+            search_query = form.data["search_box"]
             result_objects = DvD.users_dvds(request.user.id).filter(name__icontains=search_query)
             if result_objects:
                 # store the possibles in the cache
