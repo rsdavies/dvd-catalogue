@@ -60,6 +60,7 @@ class DvD(models.Model):
     director = models.ForeignKey(Director, on_delete=models.CASCADE)
     actors = models.ManyToManyField(Actor)
     genres = models.ManyToManyField(Genre)
+    times_watched = models.IntegerField('times watched', default=0)
 
     @classmethod
     def users_dvds(self, user_id):

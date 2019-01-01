@@ -113,7 +113,7 @@ def confirm_dvd(request):
             dvd.save()
 
         return render(request, 'dvds/dvd_info.html', 
-                      {'dvd' : dvd, 'just_added': True, 'count': DvD.users_dvds(request.user.id).count()})
+                      {'dvd' : dvd, 'just_added': True, 'count': DvD.users_dvds(request.user.id).count(), 'actors':actors})
     else:
         # TODO also have link to something se we can check its the right film?
         form = PickerForm(possibles=possible_dvds)
@@ -247,19 +247,22 @@ def dvd_info(request, name, dvd_id):
         form = ChooseForm(request.POST)
         dvd = DvD.objects.get(id=dvd_id)
         dvd.last_watched = datetime.datetime.today()
+        dvd.times_watched = dvd.times_watched + 1
         dvd.save()
         return render(request, 'dvds/enjoy.html')
 
     elif request.method=="GET":
         dvd = DvD.objects.get(id=dvd_id)
+        actors = dvd.actors.values('name')
         form = ChooseForm()
-        return render(request, 'dvds/dvd_info.html', {'dvd': dvd, 'just_added': False,'count':DvD.users_dvds(request.user.id).count(),'form':form})
+        return render(request, 'dvds/dvd_info.html', {'dvd': dvd, 'just_added': False,'count':DvD.users_dvds(request.user.id).count(),'form':form, 'actors': actors})
 
     else:
         random_dvd = request.session.get('random_dvd')
         dvd = DvD.users_dvds(request.user.id).get(id=random_dvd)
+        actors = dvd.actors.values('name')
         form = ChooseForm()
-        return render(request, 'dvds/dvd_info.html', {'dvd': dvd, 'just_added': False,'count':DvD.users_dvds(request.user.id).count(),'form':form})
+        return render(request, 'dvds/dvd_info.html', {'dvd': dvd, 'just_added': False,'count':DvD.users_dvds(request.user.id).count(),'form':form, 'actors': actors})
 
 def search(request):
     if request.method == "POST":

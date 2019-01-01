@@ -172,3 +172,14 @@ input[type=button], [type=submit]{
     color: white;
 }
 
+.submit_holder{
+    text-align: center;
+}
+
+.text_container{
+    margin-left: 7%;
+    margin-top: 0%;
+    border: 0;
+    padding: 0;
+}
+
