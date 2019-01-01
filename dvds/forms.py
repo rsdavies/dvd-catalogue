@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser, HouseHold, Location, DvD, Director, Actor, Genre
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 
 class CustomUserCreationForm(UserCreationForm):
 
@@ -87,3 +89,15 @@ class SemiRandomForm(forms.Form):
         self.fields['genre'] = forms.ModelChoiceField(label="Genre",
                                                       queryset=Genre.objects.filter(dvd__where_stored__household__members__id=user.id),
                                                       required=False)
+
+class SearchForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(SearchForm, self).__init__(*args, **kwargs)
+        self.fields["Search"] = forms.CharField(label='search_box', required=True)
+        self.helper=FormHelper()
+        self.helper.form_id = 'id-searchForm'
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'search'
+        self.helper.add_input(Submit('submit', 'Submit'))
+        
+

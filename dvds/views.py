@@ -7,7 +7,7 @@ import datetime
 from decimal import Decimal
 from django.core.cache import cache
 # Create your views here.
-from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet,  SemiRandomForm
+from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet,  SemiRandomForm, SearchForm
 from .models import DvD, Director, Location, Actor, Genre, HouseHold, CustomUser
 import omdb
 from random import randint
@@ -182,7 +182,6 @@ def filtered_random(request):
             cache.set('result_objects', result_objects)
             
             return render(request, 'dvds/search_results.html', {'results_list': result_objects})
-            # TODO submitting this form doesn't go to the right place. Sort out my forms! 
         else:
             # no results version of filter random 
             return render(request, 'dvds/semi_random.html', {'form': form, 'no_results':True})
@@ -193,16 +192,7 @@ def filtered_random(request):
 
 def pick_dvd(request):
     count_dvds = DvD.users_dvds(request.user.id).count()
-    if count_dvds == 0:
-        # User has no dvds! 
-        return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})
-    else: 
-        if request.method == 'GET':
-            if request.GET.get("Search"):
-                return redirect('search')            
-            return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})
-        else:
-            return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})
+    return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})
     
 
 @login_required
@@ -282,9 +272,10 @@ def dvd_info(request, name, dvd_id):
 
 
 def search(request):
-    if request.method == "GET":
-        if request.GET.get('search_box'):
-            search_query = request.GET.get('search_box', None)
+    if request.method == "POST":
+        form = SearchForm(request.POST)
+        if 'Search' in form.changed_data:
+            search_query = form.data["Search"]
             result_objects = DvD.users_dvds(request.user.id).filter(name__icontains=search_query)
             if result_objects:
                 # store the possibles in the cache
@@ -292,12 +283,14 @@ def search(request):
                 return render(request, 'dvds/search_results.html', {'results_list': result_objects})
             else: 
                 # reload search with a no results found message
-                return render(request, 'dvds/search.html', {'no_results': True})
+                form = SearchForm()
+                return render(request, 'dvds/search.html', {'form': form, 'no_results': True})
    
         else:
-            return render(request, 'dvds/search.html')
+            return render(request, 'dvds/search.html', {'form': form, 'no_results': False})
 
     else:
-        return render(request, 'dvds/search.html', {'no_results': False})
+        form = SearchForm()
+        return render(request, 'dvds/search.html', {'form': form, 'no_results': False})
 
 
