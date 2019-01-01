@@ -8,14 +8,14 @@
     <body>
         <nav class="navbar navbar-static-top">
             {% if user.is_authenticated %}
-            <p style="font-size: 20px">Hello 
-                <a href="{% url 'user_home' %}">{{ user.username }}</a>
+            <p style="font-size: 20px">hello 
+                <a href="{% url 'user_home' %}">{{ user.username|lower }}</a>
                 <a href="{% url 'search' %}"><span class="glyphicon glyphicon-search" style="font-size:16px"></span></a>
                 <a href="{% url 'dvd_landing' %}"><span class="glyphicon glyphicon-home" style="font-size: 16px"></span></a>
-                (<a href="{% url 'logout' %}" style = "font-size: 16px"> Log out</a>)</p>
+                (<a href="{% url 'logout' %}" style = "font-size: 16px"> log out</a>)</p>
             {% else %}
             <a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock" style="font-size: 16px"></span></a>
-            <a href="{% url 'signup' %}" class="top-menu"><span style="font-size:16px">Sign up</span></a>
+            <a href="{% url 'signup' %}" class="top-menu"><span style="font-size:16px">sign up</span></a>
             {% endif %}
         </nav>
         <div class="container">

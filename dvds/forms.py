@@ -20,7 +20,7 @@ class CustomUserChangeForm(UserChangeForm):
         fields = ('username', 'email')
 
 class HouseholdSetupForm(forms.Form):
-    household_name = forms.CharField(label="What do you want to call your household?", max_length=30)
+    household_name = forms.CharField(label="what do you want to call your household?", max_length=30)
  
 class LocationSetupForm(forms.Form):
     location_name = forms.CharField(label='Location Name', max_length=30,
@@ -82,11 +82,11 @@ class SemiRandomForm(forms.Form):
         self.fields['max_duration'] = forms.ChoiceField(choices=runtime_choices, required=False, label="Maximum Duration")
 
         rating_choices = [('','---------'),
-                            ('2', 'Awful'), 
-                            ('4', 'Mediochre'), 
-                            ('6', 'Ok'), 
-                            ('8', 'Great'), 
-                            ('10', 'Awesome!')]
+                            ('2', 'awful'), 
+                            ('4', 'mediochre'), 
+                            ('6', 'ok'), 
+                            ('8', 'great'), 
+                            ('10', 'awesome!')]
         self.fields['rating'] = forms.ChoiceField(choices=rating_choices, required=False, label="Rating")
 
         self.fields['director'] = forms.ModelChoiceField(label='Director', 
@@ -114,7 +114,7 @@ class SemiRandomForm(forms.Form):
                                               Field('actor'),
                                               Field('genre'),
                                               ),
-                                              Submit('submit', 'Submit')
+                                              Submit('submit', 'submit')
                                               )
         
 class SearchForm(forms.Form):
@@ -138,5 +138,5 @@ class ChooseForm(forms.Form):
         self.helper=FormHelper()
         self.helper.form_id = 'id_chooseForm'
         self.helper.form_method = 'post'
-        self.helper.layout = Layout(Submit('pick', 'Pick'))
+        self.helper.layout = Layout(Submit('pick', 'Pick', css_class="choose_submit"))
 

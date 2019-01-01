@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 {% if count_dvds == 0 %}
-<p>You have no dvds in your collecton, click
+<p>you have no dvds in your collecton, click
 <a href="{% url 'add_dvd' %}">here</a> to add them</p>
 {% else %}
-<div class="link"><a href="{% url 'randomise' count_dvds=count_dvds %}">Randomise</a></div>
-<div class="link"><a href="{% url 'filtered_random' %}">Some Idea</div>
+<div class="link"><a href="{% url 'randomise' count_dvds=count_dvds %}">randomise</a></div>
+<div class="link"><a href="{% url 'filtered_random' %}">some idea</div>
 {% endif %}
 {% endblock %}

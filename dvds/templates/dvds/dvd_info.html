@@ -2,32 +2,32 @@
 {% block content %}
 {% load crispy_forms_tags %}
 {% if just_added %}
-<h3>Successfully added to database!</h3>
+<h3>successfully added to database!</h3>
 <br>
 {% endif %}
-<p>Name:</p>
-{{ dvd.name }}
+<p>NAME:</p>
+{{ dvd.name|lower }}
 <br>
-<p>Director</p>
-{{ dvd.director }}
+<p>DIRECTOR</p>
+{{ dvd.director|lower }}
 <br>
-<p>Run time:</p>
-{{ dvd.runtime }}
+<p>RUN TIME:</p>
+{{ dvd.runtime|lower }}
 <br>
-<p>IMDB rating:</p>
-{{ dvd.imdb_rating }}
+<p>IMDB RATING:</p>
+{{ dvd.imdb_rating|lower }}
 <br>
-<p>blurb</p>
-{{ dvd.blurb }}
+<p>BLURB</p>
+{{ dvd.blurb|lower }}
 <br>
 <img src="{{ dvd.poster_url }}">
 {% if just_added %}
 <br>
-<a href="{% url 'add_dvd' %}">Add another</a>
-<a href="{% url 'dvd_landing' %}">Back home</a>
+<div class="small-link"><a href="{% url 'add_dvd' %}">add another</a></div>
+<div class="small-link"<a href="{% url 'dvd_landing' %}">back home</a></div>
 {% else %}
 <br>
-<a href="{% url 'randomise' count_dvds=count %}">Roll again!</a>
+<div class="small-link"><a href="{% url 'randomise' count_dvds=count %}">roll again!</a></div>
 <br>
 {% crispy form %}
 {% endif %}

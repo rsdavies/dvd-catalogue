@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-<p>This is for setting up your household</p>
+<p>this is for setting up your household</p>
 
 <form class="form-horizontal", acion="" method="POST">
     {% csrf_token %}
 
     <div class="row spacer">
         <div class="col-2">
-            <label>{{ household_form.name.label }}</label>
+            <label>{{ household_form.name.label|lower }}</label>
         </div>
         <div class="col-4">
             <div class="input-group">
@@ -21,12 +21,12 @@
     {% for form in location_form %}
     <div class="row form-row spacer">
         <div class="col-2">
-                <label>{{form.name.label}}</label>
+                <label>{{form.name.label|lower}}</label>
         </div>
         <div class="col-4">
             <div class="input-group">
-                {{ form.location_name }}
-                {{ form.location_desc }}
+                {{ form.location_name|lower }}
+                {{ form.location_desc|lower }}
                 <div class="input-group-append">
                     <button class="btn btn-success add-form-row">+</button>
                 </div>

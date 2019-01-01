@@ -2,10 +2,10 @@
 {% block content %}
 {% for dvd in results_list %}
 <div class="link">
-<a href="{% url 'dvd_info' name=dvd.name|slugify dvd_id=dvd.id %}">{{ dvd.name }}</a>
+<a href="{% url 'dvd_info' name=dvd.name|slugify dvd_id=dvd.id %}">{{ dvd.name|lower }}</a>
 </div>
 {% endfor %}
 <div class="small-link">
-<a href="{% url 'search' %}">Nope, try again</a>
+<a href="{% url 'search' %}">nope, try again</a>
 </div>
 {% endblock %}

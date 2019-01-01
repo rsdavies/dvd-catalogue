@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-<p>This is for managing your household</p>
+<p>this is for managing your household</p>
 <p>{{ hh }}</p>
 {% for loc in storage %}
-{{ loc.location_name }}
+{{ loc.location_name|lower }}
 {% endfor %}
 {% endblock%}

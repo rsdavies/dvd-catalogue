@@ -1,3 +1,11 @@
+@font-face{
+    font-family: 'NeonLight';
+    src: url(../fonts/NeonLight/NeonLight-Regular.otf)
+         format('opentype');
+    src: url(../fonts/NeonLight/NeonLight-Regular.ttf)
+             format('truetype');
+}
+
 body, html {
     height: 100%;
     width: 100%;
@@ -8,7 +16,8 @@ body{
     background-position: center center;
     background-repeat:  no-repeat;
     background-attachment: fixed; 
-    background-size: 100% 100%;  
+    background-size: 100% 100%; 
+    font-family: 'NeonLight'; 
 }
 
 .col-sm-8{
@@ -67,9 +76,6 @@ body{
     background-color: rgb(165, 165, 165);
 }
 
-
-
-
 .navbar {
     overflow: hidden;
     background-color: black;
@@ -99,13 +105,17 @@ body{
     padding-left: 5%
 }
 
-h1, h2, h3, h4 {
-    color: #828282;
+.emph{
+    text-align: center;
 }
 
-p, li{
-    color: #000000;
-    font-size: 12pt
+.emph h1{
+    font-family: 'NeonLight';
+    font-size: 80px;
+    color: gold;
+    background: #000000;
+    padding: 0;
+    border: 0;
 }
 
 a {
@@ -151,3 +161,14 @@ input[type=button], [type=submit]{
     box-shadow: none;
     margin-top: 1%;
 }
+
+.btn.btn-primary.choose_submit{
+    background-color: rgb(109, 109, 109);
+    color: white;
+}
+
+.btn.btn-primary.choose_submit:hover {
+    background-color: rgb(165, 165, 165);
+    color: white;
+}
+

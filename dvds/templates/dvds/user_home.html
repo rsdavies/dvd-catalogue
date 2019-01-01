@@ -2,10 +2,10 @@
 
 {% block content %}
 {% if user.is_setup %}
-<div class="link"><a href="{% url 'add_dvd' %}">Add a dvd </a> </div>
-<div class="link"><a href="{% url 'pick_dvd' %}">Pick a dvd</a></div>
-<div class="link"><a href="{% url 'manage_household' %}"> Manage household </a></div>
+<div class="link"><a href="{% url 'add_dvd' %}">add a dvd </a> </div>
+<div class="link"><a href="{% url 'pick_dvd' %}">pick a dvd</a></div>
+<div class="link"><a href="{% url 'manage_household' %}"> manage household </a></div>
 {% else %}
-<div class="link"><a href="{% url 'setup_household' %}">Setup household</a></div>
+<div class="link"><a href="{% url 'setup_household' %}">setup household</a></div>
 {% endif %}
 {% endblock %}

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="link">
-    <a href="{% url 'pick_dvd' %}">Pick DVD</a>
+    <a href="{% url 'pick_dvd' %}">pick dvd</a>
     </div>
     {% if user.is_authenticated %}
     <div class="link">
-    <a href="{% url 'add_dvd' %}">Add DVD</a>
+    <a href="{% url 'add_dvd' %}">add dvd</a>
     </div>
     {% endif %}
 {% endblock %}
