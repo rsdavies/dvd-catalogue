@@ -192,8 +192,7 @@ def filtered_random(request):
 
 def pick_dvd(request):
     count_dvds = DvD.users_dvds(request.user.id).count()
-    return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})
-    
+    return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})    
 
 @login_required
 def user_home(request):
@@ -269,7 +268,6 @@ def dvd_info(request, name, dvd_id):
         random_dvd = request.session.get('random_dvd')
         dvd = DvD.users_dvds(request.user.id).get(id=random_dvd)
         return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
-
 
 def search(request):
     if request.method == "POST":

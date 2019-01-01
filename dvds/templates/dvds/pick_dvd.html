@@ -4,7 +4,6 @@
 <p>You have no dvds in your collecton, click
 <a href="{% url 'add_dvd' %}">here</a> to add them</p>
 {% else %}
-
 <li><a href="{% url 'randomise' count_dvds=count_dvds %}">Randomise</a></li>
 <li><a href="{% url 'filtered_random' %}">Some Idea</li>
 {% endif %}

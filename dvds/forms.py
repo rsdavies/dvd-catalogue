@@ -55,7 +55,14 @@ class PickerForm(forms.Form):
         choices = [(item['imdb_id'], "%s, %s" % (item['title'], item['year'])) for item in possibles]
         self.fields["picked"] = forms.ChoiceField(choices=choices, widget=forms.RadioSelect)
         # todo, move all the sorting and saving here? 
-
+        self.helper=FormHelper()
+        self.helper.form_id = 'id_pickerForm'
+        self.helper.action = 'post'
+        self.helper.layout = Layout(Fieldset('Is it one of these?',
+                                              Field('picked'),
+                                              Submit('submit', 'Submit')
+                                            ))
+        self.helper.form_show_labels = False
 
 class SemiRandomForm(forms.Form):
     # give dropdowns of various paramters to randomise by
