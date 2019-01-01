@@ -1,9 +1,12 @@
 from django import forms
+from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser, HouseHold, Location, DvD, Director, Actor, Genre
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, ButtonHolder, Field
 from crispy_forms.bootstrap import FieldWithButtons, StrictButton
+
+
 class CustomUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm):
@@ -55,40 +58,58 @@ class PickerForm(forms.Form):
 
 
 class SemiRandomForm(forms.Form):
+    # give dropdowns of various paramters to randomise by
+    
     def __init__(self, *args, **kwargs):
-        # give dropdowns of various paramters to randomise by
-        user = kwargs.pop("user")
+        user = kwargs.pop("user")   
         super(SemiRandomForm, self).__init__(*args, **kwargs)
         decade_choices = [('', '--------'),
-                          ('2010', '2010s'), ('2000', '2000s'), 
-                          ('1990', '90s'), ('1980', '80s'), ('1970', '70s'),
-                          ('1960', '60s or earlier')]
-        self.fields["era"] = forms.ChoiceField(choices=decade_choices, required=False, label="Decade")
+                            ('2010', '2010s'), ('2000', '2000s'), 
+                            ('1990', '90s'), ('1980', '80s'), ('1970', '70s'),
+                            ('1960', '60s or earlier')]
+        self.fields['era'] = forms.ChoiceField(choices=decade_choices, required=False, label="Decade")
 
         runtime_choices = [('','--------'),
-                           ('60', '1 hour'), ('120', '2 hours'), 
-                           ('180', '3 hours'), ('240', '4 hours')]
-        self.fields["max_duration"] = forms.ChoiceField(choices=runtime_choices, required=False, label="Maximum Duration")
+                            ('60', '1 hour'), ('120', '2 hours'), 
+                            ('180', '3 hours'), ('240', '4 hours')]
+        self.fields['max_duration'] = forms.ChoiceField(choices=runtime_choices, required=False, label="Maximum Duration")
 
         rating_choices = [('','---------'),
-                          ('2', 'Awful'), 
-                          ('4', 'Mediochre'), 
-                          ('6', 'Ok'), 
-                          ('8', 'Great'), 
-                          ('10', 'Awesome!')]
-        self.fields["rating"] = forms.ChoiceField(choices=rating_choices, required=False, label="Rating")
+                            ('2', 'Awful'), 
+                            ('4', 'Mediochre'), 
+                            ('6', 'Ok'), 
+                            ('8', 'Great'), 
+                            ('10', 'Awesome!')]
+        self.fields['rating'] = forms.ChoiceField(choices=rating_choices, required=False, label="Rating")
 
         self.fields['director'] = forms.ModelChoiceField(label='Director', 
-                                                         queryset=Director.objects.filter(dvd__where_stored__household__members__id=user.id),
-                                                         required=False)
+                                        queryset=Director.objects.filter(dvd__where_stored__household__members__id=user.id).distinct(),
+                                        required=False)
 
         self.fields['actor'] = forms.ModelChoiceField(label="Actor",
-                                                      queryset=Actor.objects.filter(dvd__where_stored__household__members__id=user.id),
-                                                      required=False)
+                                        queryset=Actor.objects.filter(dvd__where_stored__household__members__id=user.id).distinct(),
+                                        required=False)
 
         self.fields['genre'] = forms.ModelChoiceField(label="Genre",
-                                                      queryset=Genre.objects.filter(dvd__where_stored__household__members__id=user.id),
-                                                      required=False)
+                                        queryset=Genre.objects.filter(dvd__where_stored__household__members__id=user.id).distinct(),
+                                        required=False)
+        self.helper=FormHelper()
+        self.helper.form_id = 'id_semiRandomForm'
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        # possibly need a reverse in form_action?
+        self.helper.form_action = 'filtered_random'
+        self.helper.layout = Layout(Fieldset('Narrow down your selection',
+                                              Field('era'),
+                                              Field('max_duration'),
+                                              Field('rating'),
+                                              Field('director'),
+                                              Field('actor'),
+                                              Field('genre'),
+                                              ),
+                                              Submit('submit', 'Submit')
+                                              )
+        
 
 class SearchForm(forms.Form):
     search_box = forms.CharField(label='Search', required=True)

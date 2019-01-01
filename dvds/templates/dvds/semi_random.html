@@ -4,9 +4,5 @@
 {% if no_results %}
     <p>There are no results with those filters, please try again.</p>
 {% endif %}
-<form action="" method="POST">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <input type="submit" value="Submit">
-</form>
+{% crispy form %}
 {% endblock %}
