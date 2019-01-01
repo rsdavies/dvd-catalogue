@@ -250,6 +250,11 @@ def dvd_info(request, name, dvd_id):
         dvd.save()
         return HttpResponse("Enjoy the show!")
 
+    elif request.method=="GET":
+        dvd = DvD.objects.get(id=dvd_id)
+        form = ChooseForm()
+        return render(request, 'dvds/dvd_info.html', {'dvd': dvd, 'just_added': False,'count':DvD.users_dvds(request.user.id).count(),'form':form})
+        
     else:
         random_dvd = request.session.get('random_dvd')
         dvd = DvD.users_dvds(request.user.id).get(id=random_dvd)
