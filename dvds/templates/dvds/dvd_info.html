@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+{% load crispy_forms_tags %}
+{% if just_added %}
+<h3>Successfully added to database!</h3>
+<br>
+{% endif %}
 <p>Name:</p>
 {{ dvd.name }}
 <br>
@@ -16,11 +21,14 @@
 {{ dvd.blurb }}
 <br>
 <img src="{{ dvd.poster_url }}">
-
-<form action="" method="POST">
-        {% csrf_token %}
-        <button type="submit" name="Randomise" value="True">Roll again</button> 
-        <button type="submit" value="{{ dvd.id }}" name="Pick"> Pick</button>
-</form>
-
+{% if just_added %}
+<br>
+<a href="{% url 'add_dvd' %}">Add another</a>
+<a href="{% url 'dvd_landing' %}">Back home</a>
+{% else %}
+<br>
+<a href="{% url 'randomise' count_dvds=count %}">Roll again!</a>
+<br>
+{% crispy form %}
+{% endif %}
 {% endblock %}

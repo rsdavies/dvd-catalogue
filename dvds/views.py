@@ -7,7 +7,7 @@ import datetime
 from decimal import Decimal
 from django.core.cache import cache
 # Create your views here.
-from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet,  SemiRandomForm, SearchForm
+from .forms import DvDForm, PickerForm, HouseholdSetupForm, LocationSetupForm, LocationFormSet,  SemiRandomForm, SearchForm, ChooseForm
 from .models import DvD, Director, Location, Actor, Genre, HouseHold, CustomUser
 import omdb
 from random import randint
@@ -112,7 +112,8 @@ def confirm_dvd(request):
                 #    dvd.director.add(director)
             dvd.save()
 
-        return render(request, 'dvds/dvd_added.html', {'dvd_info' : dvd_info})
+        return render(request, 'dvds/dvd_info.html', 
+                      {'dvd' : dvd, 'just_added': True, 'count': DvD.users_dvds(request.user.id).count()})
     else:
         # TODO also have link to something se we can check its the right film?
         form = PickerForm(possibles=possible_dvds)
@@ -189,7 +190,6 @@ def filtered_random(request):
         form = SemiRandomForm(user=request.user)
         return render(request, 'dvds/semi_random.html', {'form': form, 'no_results': False})
 
-
 def pick_dvd(request):
     count_dvds = DvD.users_dvds(request.user.id).count()
     return render(request, 'dvds/pick_dvd.html', {'count_dvds': count_dvds})    
@@ -244,30 +244,17 @@ def dvd_added(request):
 
 def dvd_info(request, name, dvd_id):
     if request.method=="POST":
-        if request.POST.get('Pick'):
-            # set the last watched date to now and save. 
-            # redirect to an 'enjoy the show' page
-            dvd = DvD.objects.get(id=request.POST.get('Pick'))
-            dvd.last_watched = datetime.datetime.today()
-            dvd.save()
-            return HttpResponse("Enjoy the show!")
-
-        elif request.POST.get('Randomise'):
-            # TODO I have repeated myself here, not very DRY
-            # How many dvds does this user have? 
-            count_dvds = DvD.users_dvds.count()
-            random_id = randint(0, count_dvds-1)
-            dvd = DvD.users_dvds[random_id]
-            return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
-
-    elif request.method=="GET":
-        dvd = DvD.users_dvds(request.user.id).get(id=dvd_id)
-        return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
+        form = ChooseForm(request.POST)
+        dvd = DvD.objects.get(id=dvd_id)
+        dvd.last_watched = datetime.datetime.today()
+        dvd.save()
+        return HttpResponse("Enjoy the show!")
 
     else:
         random_dvd = request.session.get('random_dvd')
         dvd = DvD.users_dvds(request.user.id).get(id=random_dvd)
-        return render(request, 'dvds/dvd_info.html', {'dvd': dvd})
+        form = ChooseForm()
+        return render(request, 'dvds/dvd_info.html', {'dvd': dvd, 'just_added': False,'count':DvD.users_dvds(request.user.id).count(),'form':form})
 
 def search(request):
     if request.method == "POST":

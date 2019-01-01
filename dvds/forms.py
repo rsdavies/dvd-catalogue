@@ -117,7 +117,6 @@ class SemiRandomForm(forms.Form):
                                               Submit('submit', 'Submit')
                                               )
         
-
 class SearchForm(forms.Form):
     search_box = forms.CharField(label='Search', required=True)
     def __init__(self, *args, **kwargs):
@@ -133,4 +132,11 @@ class SearchForm(forms.Form):
                                     )
         self.helper.form_show_labels = False
         
+class ChooseForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(ChooseForm, self).__init__(*args, **kwargs)
+        self.helper=FormHelper()
+        self.helper.form_id = 'id_chooseForm'
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(Submit('pick', 'Pick'))
 
