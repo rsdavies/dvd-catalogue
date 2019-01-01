@@ -1,13 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<p>Welcome home!</p>
-<p>What do you want to do?</p>
 {% if user.is_setup %}
-<p><a href="{% url 'add_dvd' %}">Add a dvd </a> </p>
-<p><a href="{% url 'manage_household' %}"> Manage household </a></p>
+<div class="link"><a href="{% url 'add_dvd' %}">Add a dvd </a> </div>
+<div class="link"><a href="{% url 'pick_dvd' %}">Pick a dvd</a></div>
+<div class="link"><a href="{% url 'manage_household' %}"> Manage household </a></div>
 {% else %}
-<p><a href="{% url 'setup_household' %}">Setup household</a></p>
+<div class="link"><a href="{% url 'setup_household' %}">Setup household</a></div>
 {% endif %}
-</p>
 {% endblock %}
