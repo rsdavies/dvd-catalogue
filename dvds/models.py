@@ -61,6 +61,7 @@ class DvD(models.Model):
     actors = models.ManyToManyField(Actor)
     genres = models.ManyToManyField(Genre)
     times_watched = models.IntegerField('times watched', default=0)
+    is_series = models.BooleanField('series', default=False)
 
     @classmethod
     def users_dvds(self, user_id):

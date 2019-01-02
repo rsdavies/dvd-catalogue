@@ -49,14 +49,13 @@ class DvDForm(forms.Form):
         self.helper.form_id = 'id-dvdForm'
         self.helper.form_method = 'post'
         self.helper.form_action = 'add_dvd'
-
-        self.helper.layout = Layout('add a dvd',
-                                    'name',
-                                    'year',
-                                    Row(Column('location', css_class='form-group col-md-6 mb-0'),
-                                        Column('type', css_class='form-group col-md-6 mb-0')),
+        self.helper.layout = Layout(Fieldset('add a dvd',
+                                    Field('name'),
+                                    Field('year'),
+                                    Row(Column(Field('location'), css_class='form-group col-md-6 mb-0'),
+                                        Column(Field('type'), css_class='form-group col-md-6 mb-0')),
                                         Submit('submit', 'submit')
-                                    )
+                                    ))
         
 
 class PickerForm(forms.Form):
@@ -82,6 +81,9 @@ class SemiRandomForm(forms.Form):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user")   
         super(SemiRandomForm, self).__init__(*args, **kwargs)
+        self.fields['is_series'] = forms.ChoiceField(choices=[(True, 'series'), 
+                                                              (False, 'film')], widget=forms.RadioSelect,
+                                                              label='film or series')
         decade_choices = [('', '--------'),
                             ('2010', '2010s'), ('2000', '2000s'), 
                             ('1990', '90s'), ('1980', '80s'), ('1970', '70s'),
@@ -119,6 +121,7 @@ class SemiRandomForm(forms.Form):
         # possibly need a reverse in form_action?
         self.helper.form_action = 'filtered_random'
         self.helper.layout = Layout(Fieldset('Narrow down your selection',
+                                              Field('is_series'),
                                               Field('era'),
                                               Field('max_duration'),
                                               Field('rating'),

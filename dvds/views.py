@@ -34,11 +34,14 @@ def add_dvd(request):
             omdb.set_default('apikey', api_key)
             if type == 'film':
                 possible_dvds = omdb.search_movie(name, year=year)
+                request.session['is_series'] = False
             else:
                 possible_dvds = omdb.search_series(name, year=year)
+                request.session['is_series'] = True
 
             request.session['possible_dvds'] = possible_dvds
             request.session['dvd_location'] = dvd_location.id
+            
             # this is a list of dictionaries with films matching the search.
             # want to display the possibilities to the user.
             # user then picks which one is right, and a further call to the omdb api
@@ -56,6 +59,7 @@ def confirm_dvd(request):
     # display the list of possible films, years and links to posters?
     
     possible_dvds = request.session.get('possible_dvds')
+    is_series = request.session.get('is_series')
     if request.method == 'POST':
         form = PickerForm(request.POST, possibles=possible_dvds)
         if form.is_valid():
@@ -99,7 +103,8 @@ def confirm_dvd(request):
                       imdb_rating = Decimal(dvd_info['imdb_rating']),
                       blurb = dvd_info['plot'],
                       poster_url = dvd_info['poster'],
-                      director = directors[0])
+                      director = directors[0],
+                      is_series = is_series)
             dvd.save()
             
             # this one was already in there!
@@ -135,6 +140,12 @@ def filtered_random(request):
             # now the searching logic with the filters. 
             # Handle era
             filtered_query = DvD.users_dvds(request.user.id)
+            if 'is_series' in form.changed_data:
+                if form.cleaned_data:  #True
+                    filtered_query = filtered_query.filter(is_series=True)
+                else:
+                    filtered_query = filtered_query.filter(is_series=False)
+                    
             if 'era' in form.changed_data:
                 if form.cleaned_data['era'] == '2010':
                     # then we only have one end to the filter
