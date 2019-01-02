@@ -52,8 +52,9 @@ class DvDForm(forms.Form):
         self.helper.layout = Layout(Fieldset('add a dvd',
                                     Field('name'),
                                     Field('year'),
-                                    Row(Column(Field('location'), css_class='form-group col-md-6 mb-0'),
-                                        Column(Field('type'), css_class='form-group col-md-6 mb-0')),
+                                    Row(Column(css_class='form-group col-md-2 mb-0'),
+                                        Column(Field('location'), css_class='form-group col-md-4 mb-0'),
+                                        Column(Field('type'), css_class='form-group col-md-4 mb-0')),
                                         Submit('submit', 'submit')
                                     ))
         
