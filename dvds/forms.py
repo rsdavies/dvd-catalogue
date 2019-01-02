@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser, HouseHold, Location, DvD, Director, Actor, Genre
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, ButtonHolder, Field
+from crispy_forms.layout import Submit, Layout, Fieldset, ButtonHolder, Field, Row, Column
 from crispy_forms.bootstrap import FieldWithButtons, StrictButton
 
 
@@ -41,10 +41,23 @@ class DvDForm(forms.Form):
     def __init__(self, *args, **kwargs):
         user=kwargs.pop('user')
         super(DvDForm, self).__init__(*args, **kwargs)
+        self.helper=FormHelper()
         self.fields["name"] = forms.CharField(label="what the dvd's name?", max_length=200, required=True)
         self.fields["year"] = forms.CharField(label="what year was it released?", required=False)
-        self.fields["location"] = forms.ModelChoiceField(label="location", queryset=Location.objects.filter(household__members__id=user.id))
+        self.fields["location"] = forms.ModelChoiceField(label="Where is it stored?", queryset=Location.objects.filter(household__members__id=user.id))
         self.fields["type"] = forms.ChoiceField(label="Its is a ", initial='', choices=[('film', 'film'), ('series', 'series')])
+        self.helper.form_id = 'id-dvdForm'
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'add_dvd'
+
+        self.helper.layout = Layout('add a dvd',
+                                    'name',
+                                    'year',
+                                    Row(Column('location', css_class='form-group col-md-6 mb-0'),
+                                        Column('type', css_class='form-group col-md-6 mb-0')),
+                                        Submit('submit', 'submit')
+                                    )
+        
 
 class PickerForm(forms.Form):
     def __init__(self, *args, **kwargs):
